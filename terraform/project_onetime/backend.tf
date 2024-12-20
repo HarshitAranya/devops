@@ -7,7 +7,7 @@ terraform {
   backend "s3" {
     bucket = "backend_name"
     key = "onetime.tfstate" #project_name.tfstate
-    region = "us-east-1"
+    region = var.region
     profile = "name-of-profile"
   }
 }
