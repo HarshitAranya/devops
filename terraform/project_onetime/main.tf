@@ -5,14 +5,16 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "../modules/vpc"
-  
+  source = "../modules/vpc"  
 }
 
 module "sg" {
   source = "../modules/sg"
 }
 
+module "vms" {
+  source = "../modules/vpc"
+}
 
 output "instance_JenMaster_public_ip" {
   description = "This will provide public ip of created instances"
