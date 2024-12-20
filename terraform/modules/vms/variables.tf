@@ -1,11 +1,18 @@
 variable "pubkeypath" {
 	description = "Public key path from local"
   type = string
+  default = ""
+}
+
+variable "sshpubkey" {
+  description = "The SSH public key"
+  type        = string
 }
 
 variable "owners" {
 	description = "AWS Account ID for Canonical (Ubuntu)"
   type = string
+  default = ""
 }
 
 variable "slave_name" {

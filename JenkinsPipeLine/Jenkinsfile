@@ -1,0 +1,49 @@
+// Jenkinsfile
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Run Terraform Command') {
+            steps {
+                echo 'Running Terraform command...'
+                // Add your Terraform command here
+                sh 'terraform init'
+                // sh 'terraform apply -auto-approve'
+            }
+        }
+
+        stage('Run Build Command') {
+            steps {
+                echo 'Running build command...'
+                // Add your build command here (e.g., Maven, Gradle, etc.)
+                // sh './build.sh'
+            }
+        }
+
+        stage('Run Scan Code Command') {
+            steps {
+                echo 'Running code scan...'
+                // Add your code scanning command here (e.g., SonarQube, etc.)
+                // sh 'sonar-scanner'
+            }
+        }
+
+        stage('Run Docker Command') {
+            steps {
+                echo 'Running Docker command...'
+                // Add your Docker command here (e.g., build, run, etc.)
+                // sh 'docker build -t myimage .'
+                // sh 'docker run myimage'
+            }
+        }
+
+        stage('Run Terraform Command Again') {
+            steps {
+                echo 'Running Terraform command again...'
+                // Add the final Terraform command here
+                // sh 'terraform plan'
+            }
+        }
+    }
+}

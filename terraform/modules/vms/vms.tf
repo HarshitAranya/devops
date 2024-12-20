@@ -31,9 +31,13 @@ resource "aws_instance" "JenSlave" {
   }
   
   user_data = <<-EOF
-  #!/bin/bash
-  hostnamectl set-hostname ${var.slave_name}
-  EOF 
+            #!/bin/bash
+            hostnamectl set-hostname ${var.slave_name}
+            mkdir -p /root/.ssh
+            echo "${var.sshpubkey}" >> /root/.ssh/authorized_keys
+            chmod 600 /root/.ssh/authorized_keys
+            chown root:root /root/.ssh /root/.ssh/authorized_keys
+          EOF
 
   # connection {
   #   type        = "ssh"
@@ -66,9 +70,14 @@ resource "aws_instance" "JenMaster" {
   }
 
   user_data = <<-EOF
-  #!/bin/bash
-  hostnamectl set-hostname ${var.master_name}
-  EOF
+            #!/bin/bash
+            hostnamectl set-hostname ${var.master_name}
+            mkdir -p /root/.ssh
+            echo "${var.sshpubkey}" >> /root/.ssh/authorized_keys
+            chmod 600 /root/.ssh/authorized_keys
+            chown root:root /root/.ssh /root/.ssh/authorized_keys
+          EOF
+          
   #to git clone
   # sudo cat <<EOF_CAT1 > /root/.ssh/id_rsa
   # ${data.template_file.private_key.rendered}

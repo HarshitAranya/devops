@@ -74,15 +74,27 @@ resource "aws_instance" "AWSControllerVM" {
   }
 
   user_data = <<-EOF
-  #!/bin/bash
-  set -e
-  exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-  hostnamectl set-hostname 'AWSControllerVM'
-  sudo yum install -y yum-utils
-  sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
-  sudo yum update -y
-  sudo yum install -y terraform git
-  EOF
+              #!/bin/bash
+              set -e
+              exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+              
+              hostnamectl set-hostname 'AWSControllerVM'
+              
+              sudo yum install -y yum-utils
+              sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+              sudo yum update -y
+              sudo yum install -y terraform git
+              
+              # Install AWS CLI version 2
+              sudo yum install -y https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+              sudo unzip awscli-exe-linux-x86_64.zip
+              sudo ./aws/install
+
+              # Clean up
+              sudo rm -rf awscli-exe-linux-x86_64.zip aws
+
+            EOF
+
 }
 
 # Output the instance's public IP address

@@ -13,7 +13,7 @@ module "sg" {
 }
 
 module "vms" {
-  source = "../modules/vpc"
+  source = "../modules/vms"
 }
 
 output "instance_JenMaster_public_ip" {
