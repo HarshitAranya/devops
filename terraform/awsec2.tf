@@ -1,3 +1,4 @@
+# ssh-keygen -t rsa
 # Terraform version and provider configuration
 terraform {
   required_version = ">= 1.10.0"
