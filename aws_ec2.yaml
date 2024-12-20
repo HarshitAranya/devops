@@ -1,0 +1,45 @@
+name: Deploy EC2 Instance
+
+on:
+  push:
+    branches:
+      - myCodes
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.10.0 # Replace with the required Terraform version
+
+    # - name: Configure AWS credentials
+    #   env:
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #   run: |
+    #     echo "[default]" > ~/.aws/credentials
+    #     echo "aws_access_key_id = $AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+    #     echo "aws_secret_access_key = $AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+
+    # - name: Terraform Apply
+    #   run: terraform apply -input=false tfplan
+
+    # - name: Commit and Push Terraform State
+    #   run: |
+    #     git config user.name "github-actions"
+    #     git config user.email "actions@github.com"
+    #     git add terraform.tfstate
+    #     git commit -m "Update Terraform state"
+    #     git push origin main
