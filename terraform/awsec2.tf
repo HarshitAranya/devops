@@ -85,7 +85,7 @@ resource "aws_instance" "AWSControllerVM" {
 }
 
 # Output the instance's public IP address
-output "instance_public_ip" {
-  value       = aws_instance.AWSControllerVM.public_ip
-  description = "Public IP address of the EC2 instance"
-}
+# output "instance_public_ip" {
+#   value       = aws_instance.AWSControllerVM.public_ip
+#   description = "Public IP address of the EC2 instance"
+# }
