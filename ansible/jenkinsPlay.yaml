@@ -1,0 +1,89 @@
+# ansible-playbook -i /path/to/custom/hosts jenkinsPlay.yaml
+---
+- name: Install and configure Jenkins master and slave
+  hosts: jenkins_servers
+  become: yes
+  tasks:
+    - name: Install yum-utils
+      yum:
+        name: yum-utils
+        state: present
+
+    - name: Update yum packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install git
+      yum:
+        name: git
+        state: present
+
+    - name: Install Terraform 1.10.0
+      become: yes
+      block:
+        - name: Download Terraform 1.10.0
+          get_url:
+            url: https://releases.hashicorp.com/terraform/1.10.0/terraform_1.10.0_linux_amd64.zip
+            dest: /tmp/terraform_1.10.0_linux_amd64.zip
+
+        - name: Unzip Terraform
+          unarchive:
+            src: /tmp/terraform_1.10.0_linux_amd64.zip
+            dest: /usr/local/bin/
+            remote_src: yes
+
+        - name: Ensure Terraform is executable
+          file:
+            path: /usr/local/bin/terraform
+            mode: '0755'
+
+    - name: Install Docker on Amazon Linux 2
+      become: yes
+      yum:
+        name: docker
+        state: present
+     
+    - name: Add Jenkins repository
+      get_url:
+        url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+
+    - name: Import Jenkins repository GPG key
+      rpm_key:
+        state: present
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+    - name: Install Java 17 (Amazon Corretto)
+      yum:
+        name: java-17-amazon-corretto
+        state: present
+
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: present
+
+    - name: Start Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    - name: Set up SSH private key for root
+      copy:
+        src: private_key
+        dest: /root/.ssh/id_rsa
+        mode: '0600'
+
+    - name: Ensure Jenkins is running
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes    

@@ -1,0 +1,6 @@
+[jenkins_servers]
+192.168.1.1     JenSlave
+192.168.1.2     JenMaster
+
+[jenkins_servers:vars]
+ansible_ssh_user=root
