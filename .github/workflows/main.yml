@@ -1,9 +1,16 @@
 name: Deploy EC2 Instance
 
 on:
-  push:
-    branches:
-      - myCodes
+  workflow_dispatch:
+
+# on:
+#   schedule:
+#     - cron: '0 0 * * 1'  # Runs every Monday at midnight
+    
+# on:
+#   push:
+#     branches:
+#       - myCodes_Stop
 
 jobs:
   deploy:
