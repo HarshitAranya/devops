@@ -33,8 +33,9 @@ pipeline {
             steps {
                 echo 'Running Docker command...'
                 // Add your Docker command here (e.g., build, run, etc.)
-                sh 'docker build -t myappimage .'
-                sh 'docker run myappimage -d -p 8080:80 mywebapp:v1'
+                sh 'docker build -t <your-dockerhub-username>/my-web-app:latest ../docker/Dockerfile'
+                // sh 'docker run myappimage -d -p 8080:80 mywebapp:v1'
+                sh 'docker push <your-dockerhub-username>/my-web-app:latest'
             }
         }
 
