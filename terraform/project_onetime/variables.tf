@@ -3,6 +3,7 @@ variable "name" {type = string}
 variable "sshpubkey" {
   description = "The SSH public key"
   type        = string
+  default = ""
 }
 
 

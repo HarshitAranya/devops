@@ -90,6 +90,10 @@ resource "aws_instance" "AWSControllerVM" {
               sudo unzip awscli-exe-linux-x86_64.zip
               sudo ./aws/install
 
+              # Install Ansible
+              sudo yum install -y epel-release
+              sudo yum install -y ansible
+              
               # Clean up
               sudo rm -rf awscli-exe-linux-x86_64.zip aws
 

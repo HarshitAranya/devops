@@ -7,6 +7,7 @@ variable "pubkeypath" {
 variable "sshpubkey" {
   description = "The SSH public key"
   type        = string
+  default = ""
 }
 
 variable "owners" {
