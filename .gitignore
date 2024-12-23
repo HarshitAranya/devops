@@ -2,3 +2,4 @@
 # ansible*/**
 *key*
 keys/**
+ansible/private_key

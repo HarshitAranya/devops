@@ -1,0 +1,34 @@
+* git config --global user.name "User Name"
+* git config --global user.email user.name@xyz.com
+* git branch --set-upstream-to=origin/dev devlocal
+* git remote show origin
+* git remote add origin https://<url>/your_repo_name
+* git config --global push.default current (current = in which branch you are working)
+* git config --global difftool.vscode.cmd "code --wait --diff $LOCAL $REMOTE"
+* git config --global advice.addIgnoredFile false
+* git push -u origin devlocal
+* git branch -m main (rename the current branch to main).
+  git branch -m old-branch new-branch
+* git checkout -b new
+* git switch -c new
+* git config --global diff.tool vscode
+* git cherry-pick <commitId>
+* git config --global core.autocrlf true  #For windows
+* git config --global diff.tool vscode
+* git config --global difftool.vscode.cmd "code --wait --diff $LOCAL $REMOTE"
+* git config --global --unset diff.tool
+* git config --global --unset difftool.vscode.cmd
+* git config --global core.auto "code --wait"
+* git cat-file -p HEAD
+* git rm --cached 
+command is used to remove files from the Git index (staging area) without deleting them from the working directory.
+* git rm --cached filename.txt
+to remove the unwanted file from staging area.
+* git clean -n
+* got commit -am "msg"
+* git rebase -i HEAD~3 OR git rebase -i base-branch
+* git rebase --continue
+* git rebase --abort
+* git reset --hard <commitid>
+* git cherry-pick <commitid>
+* git revert <commitid>

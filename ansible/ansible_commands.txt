@@ -1,0 +1,63 @@
+yum install epel-release or amazon-linux-extras install epel -y
+
+yum install ansible -y
+
+ansible --version
+
+/etc/ansible/ansible.cfg
+[default]
+log_path = ./ansible.log
+host_key_checking = False  #to disable host key verification
+
+hostnamectl set-hostname host1
+vi /etc/ansible/host # IP 	hostname
+[ClientGroup1]
+ip	client1
+ip	client2
+ip	client3
+ClientGroup2
+ip	client4
+ip	client5
+ip	client6
+
+ansible -m ping all
+ansible -m ping ClientGroup1
+ansible -m shell -a 'free -m' client1
+ansible-playbook file.yaml
+
+---
+- hosts: hostname
+  vars:
+   var1: Hello Harshit
+   var2:
+    - Dewas
+    - Dewas2
+    - Dewas3
+   var3:[indore, indore1, indore2]
+  tasks:
+  - name: create a login use
+    user:
+     name: myuser
+     password: anyPassword
+     state: present
+     shell: /bin/bash
+     createhome: yes
+     home: /home/myuser
+
+  - name: Using variable
+    debug:
+      mgs: var1: {{ var1 }} {{ var3[1] }}
+
+  - name: Using loop
+    debug:
+      mgs: "{{ item }}"
+    with_items:
+    - I am in {{ var3 [2] }}
+
+  - name: Set variable
+    shell: host myip.opendns resolver1.opedns.com | grep address | awk '{print $4}'
+    register: shell_result
+  - debug:
+      mgs: Public ip is {{ shell_result.stdout }}
+    with_items:
+    - I am in {{ var3 [2] }}
