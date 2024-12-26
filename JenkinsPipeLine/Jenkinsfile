@@ -33,6 +33,7 @@ pipeline {
             steps {
                 echo 'Running Docker command...'
                 // Add your Docker command here (e.g., build, run, etc.)
+                // docker build -t angular-app .
                 sh 'docker build -t <your-dockerhub-username>/my-web-app:latest ../docker/Dockerfile'
                 // sh 'docker run myappimage -d -p 8080:80 mywebapp:v1'
                 sh 'docker push <your-dockerhub-username>/my-web-app:latest'
@@ -44,7 +45,14 @@ pipeline {
                 echo 'Running Terraform command again...'
                 // Add the final Terraform command here
                 // sh 'terraform plan'
+                // docker run -d -p 8080:80 angular-app
             }
         }
+        // stage('Run Terraform Command Again') {
+        //     steps {
+        //         echo 'Running docker container'
+        //         RUN 'docker run -d -p 8080:80 angular-app'
+        //     }
+        // }
     }
 }
