@@ -4,6 +4,15 @@ pipeline {
     agent any
 
     stages {
+        stage('Run Pipeline Vaslidation') {
+            steps {
+                echo 'Running check all files if exists'
+                // Add your Terraform command here
+                sh 'ls'
+                sh 'ls ./tire3_WebApp'
+            }
+        }
+
         stage('Run Terraform Command') {
             steps {
                 echo 'Running Terraform command...'
@@ -17,7 +26,7 @@ pipeline {
             steps {
                 echo 'Running build command...'
                 // Add your build command here (e.g., Maven, Gradle, etc.)
-                sh './build.sh'
+                // sh './build.sh'
             }
         }
 
@@ -32,14 +41,56 @@ pipeline {
         stage('Run Docker Command') {
             steps {
                 echo 'Running Docker command...'
+                // harshitaranya/harshitrepo:tagname
                 // Add your Docker command here (e.g., build, run, etc.)
                 // docker build -t angular-app .
-                sh 'docker build -t <your-dockerhub-username>/my-web-app:latest ../docker/Dockerfile'
+                // sh 'docker build -t <your-dockerhub-username>/my-web-app:latest ../docker/Dockerfile'
+                // sh 'docker build -t harshitaranya/harshitrepo:backend:v1 -f ../docker/Dockerfile'
                 // sh 'docker run myappimage -d -p 8080:80 mywebapp:v1'
-                sh 'docker push <your-dockerhub-username>/my-web-app:latest'
+                // sh 'docker push harshitaranya/harshitrepo:backend:v1'
+                // sh 'docker push <your-dockerhub-username>/my-web-app:latest'
+                sh 'docker --version'
             }
         }
-
+        stage('Build Backend') {
+            steps {
+                echo 'Running Docker build backend...'
+                sh 'docker build -t harshitaranya/harshitrepo:backend:v1 -f ../tire3_WebApp/backend/Dockerfile'
+                // sh 'docker push harshitaranya/harshitrepo:backend:v1'
+            }
+        }
+        stage('Build Frontend') {
+            steps {
+                echo 'Running Docker build frontend...'
+                sh 'docker build -t harshitaranya/harshitrepo:frontend:v1 -f ../tire3_WebApp/frontend/Dockerfile'
+                // sh 'docker push harshitaranya/harshitrepo:backend:v1'
+            }
+        }
+        stage('Build Database') {
+            steps {
+                echo 'Running Docker build database...'
+                sh 'docker build -t harshitaranya/harshitrepo:database:v1 -f ../tire3_WebApp/database/Dockerfile'
+                // sh 'docker push harshitaranya/harshitrepo:backend:v1'
+            }
+        }
+        //in case privet repo
+        // stage('Docker Login') {
+        //     steps {
+        //         withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+        //             sh """
+        //             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+        //             """
+        //         }
+        //     }
+        // }         
+        stage('Docker Push') {
+            steps {
+                echo 'Running Docker Push...'
+                sh 'docker push harshitaranya/harshitrepo:backend:v1'
+                sh 'docker push harshitaranya/harshitrepo:frontend:v1'
+                sh 'docker push harshitaranya/harshitrepo:database:v1'
+            }
+        }
         stage('Run Terraform Command Again') {
             steps {
                 echo 'Running Terraform command again...'

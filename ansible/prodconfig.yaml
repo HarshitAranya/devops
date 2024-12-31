@@ -1,0 +1,51 @@
+# ansible-playbook -i /path/to/custom/hosts jenkinsPlay.yaml
+---
+- name: Install and configure Jenkins master and slave
+  hosts: prod_servers
+  become: yes
+  tasks:
+    - name: Install yum-utils
+      yum:
+        name: yum-utils
+        state: present
+
+    - name: Update yum packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Install Docker on Amazon Linux 2
+      become: yes
+      yum:
+        name: docker
+        state: present
+
+
+    - name: Install dependencies
+      yum:
+        name:
+          - curl
+          - jq
+        state: present
+
+    - name: Download Docker Compose binary
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)"
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x'
+
+    - name: Verify Docker Compose installation
+      command: /usr/local/bin/docker-compose --version
+      register: docker_compose_version
+      changed_when: false
+
+    - name: Display Docker Compose version
+      debug:
+        msg: "Docker Compose version is {{ docker_compose_version.stdout }}"
+    
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes         
+

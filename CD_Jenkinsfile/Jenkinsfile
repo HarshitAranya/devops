@@ -1,0 +1,184 @@
+// Jenkinsfile
+
+pipeline {
+    agent any
+    //this should be set in Jenkins as secrets and this will be the ID postgres-user
+    environment {
+        POSTGRES_USER = credentials('postgres-user')  // Use the ID of the secret
+        POSTGRES_PASSWORD = credentials('postgres-password')
+        POSTGRES_DB = credentials('postgres-db')
+        POSTGRES_HPORT = credentials('postgres-hport')
+        POSTGRES_CPORT = credentials('postgres-cport')
+    }
+
+    stages {
+        stage('Run CD Pipeline Vaslidation') {
+            steps {
+                echo 'Running check all files if exists'
+                // Add your Terraform command here
+                sh 'ls'
+                sh 'ls ./tire3_WebApp'
+                sh 'scp -V'
+            }
+        }
+
+        stage('Run Terraform Command') {
+            steps {
+                echo 'Running Terraform command...'
+                // Add your Terraform command here
+
+                // sh 'terraform init -input=false'
+                // sh 'terraform apply -auto-approve -var-file="terraform/CD_terraform/terraform.tfvars" terraform/CD_terraform/cdinfra.tf'
+
+                // sh 'cd terraform/CD_terraform'
+                // sh 'terraform init -input=false'
+                // sh 'terraform apply -auto-approve'
+
+                // sh 'cd terraform/CD_terraform && terraform init -input=false'
+                // sh 'cd terraform/CD_terraform && terraform apply -auto-approve'
+
+                sh 'terraform init -input=false -chdir=terraform/CD_terraform'
+                // Apply the Terraform configuration
+                sh 'terraform apply -auto-approve -chdir=terraform/CD_terraform'
+            }
+        }
+        script {
+            def instanceDnsId = sh(script: 'terraform output -raw instance_dns_id', returnStdout: true).trim()
+            def prodVMname = ""
+            def prodVM_IP = ""
+            echo "Instance DNS and ID: ${instanceDnsId}"
+            // You can now use instanceDnsId in further steps
+            // Example: SSH into the instance or perform other actions
+        }
+        script {
+            echo "Updating host in ansible hosts file"
+            // echo "${prodVM_IP}     ${prodVMname}">>ansible/hosts
+            
+            // Update Ansible hosts file or inventory dynamically
+            writeFile(file: 'hosts', text: "[ec2_instance]\n${instanceDnsId}")
+
+            // You can now use instanceDnsId in further steps
+            // Example: SSH into the instance or perform other actions
+        }        
+        stage('Run Ansible Command') {
+            steps {
+                echo 'Configuring the prod vm...'
+                // sh 'echo "ip_of_vm     hostname_of_vm">>ansible/hosts'
+                // sh 'ansible-playbook ansible/prodconfig.yaml'
+                // sh 'ansible-playbook -i ansible/hosts ansible/prodconfig.yaml'
+                sh 'ansible-playbook -i hosts ansible/prodconfig.yaml'
+                // sh "ansible-playbook -i hosts install_docker.yml --private-key=/path/to/your/private-key.pem"
+            }
+        }        
+
+        stage('Run Docker Command') {
+            steps {
+                echo 'Running Docker command...'
+                sh 'docker --version'
+            }
+        }
+        //in case privet repo
+        // stage('Docker Login') {
+        //     steps {
+        //         withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+        //             sh """
+        //             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+        //             """
+        //         }
+        //     }
+        // } 
+       
+        // stage('Docker Pull on prod vm') {
+        //     steps {
+        //         script {
+        //             echo 'Running Docker Pull...'
+        //             // Run Docker pull and container start commands on the EC2 instance
+        //             sh """
+        //                 ssh -o StrictHostKeyChecking=no ubuntu@${instanceDnsId} '
+        //                     echo "Pulling Docker images..." && \
+        //                     docker pull harshitaranya/harshitrepo:backend:v1 && \
+        //                     docker pull harshitaranya/harshitrepo:frontend:v1 && \
+        //                     docker pull harshitaranya/harshitrepo:database:v1 && \
+        //                     echo "Running Docker containers..." && \
+        //                     docker run -d --name backend harshitaranya/harshitrepo:backend:v1 && \
+        //                     docker run -d --name frontend harshitaranya/harshitrepo:frontend:v1 && \
+        //                     docker run -d --name database harshitaranya/harshitrepo:database:v1
+        //                 '
+        //             """
+        //         }
+                
+        //         // sh 'docker pull harshitaranya/harshitrepo:backend:v1'
+        //         // sh 'docker pull harshitaranya/harshitrepo:frontend:v1'
+        //         // sh 'docker pull harshitaranya/harshitrepo:database:v1'
+        //     }
+        // }
+
+        // stage('Deploy with Ansible') {
+        //     steps {
+        //         script {
+        //             echo 'Running Ansible deployment...'
+        //             sh 'ansible-playbook -i hosts ansible/prodDeployment.yaml'
+        //         }
+        //     }
+        // }
+
+        // stage('Deploy with Docker Compose') {
+        //     steps {
+        //         script {
+        //             echo 'Deploying Docker containers with Compose...'
+        //              // Create the directory on the prod VM if it doesn't exist
+        //             sh """
+        //                 ssh -o StrictHostKeyChecking=no ec2-user@${instanceDnsId} 'mkdir -p /opt/docker-compose'
+        //             """
+        //             // Copy the docker-compose.yml file to the prod VM
+        //             sh """
+        //                 scp -o StrictHostKeyChecking=no docker-compose.yml ec2-user@${instanceDnsId}:/opt/docker-compose/
+        //             """
+        //             // Run docker-compose commands on the prod VM
+        //             sh """
+        //                 ssh -o StrictHostKeyChecking=no ubuntu@${instanceDnsId} '
+        //                     cd /opt/docker-compose && \
+        //                     docker-compose pull && \
+        //                     docker-compose up -d
+        //                 '
+        //             """
+        //         }
+        //     }
+        // }
+
+        stages {
+            stage('Deploy with Docker Compose') {
+                steps {
+                    script {
+                        echo 'Deploying Docker containers with Compose...'
+                        // Create the directory on the prod VM if it doesn't exist
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ec2-user@${instanceDnsId} 'mkdir -p /opt/docker-compose'
+                        """ 
+                        echo 'Updating variables in deploying-compose file and copy over remote vm...'                       
+                        sh """
+                            # Replace the placeholders in the docker-compose file with the secrets
+                            sed -i 's/\$POSTGRES_USER/${env.POSTGRES_USER}/' docker-compose.yml
+                            sed -i 's/\$POSTGRES_PASSWORD/${env.POSTGRES_PASSWORD}/' docker-compose.yml
+                            sed -i 's/\$POSTGRES_DB/${env.POSTGRES_DB}/' docker-compose.yml
+
+                            # SCP to remote VM
+                            scp -i your-ssh-key docker-compose.yml user@remote:/opt/docker-compose
+                        """
+                        // Run docker-compose commands on the prod VM
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ubuntu@${instanceDnsId} '
+                                cd /opt/docker-compose && \
+                                docker-compose pull && \
+                                docker-compose up -d
+                            '
+                        """                        
+                    }
+                }
+            }
+        }
+
+
+    }
+}
+

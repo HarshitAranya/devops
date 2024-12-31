@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: harshitaranya/harshitrepo:frontend:v1
+    container_name: frontend_container
+    networks:
+      - app_network
+    # volumes:
+    #   - frontend_data:/app/data
+    ports:
+      - "80:80"
+
+    # this service will start after  
+    depends_on:
+      - backend
+
+
+

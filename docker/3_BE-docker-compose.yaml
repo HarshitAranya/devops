@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  backend:
+    image: harshitaranya/harshitrepo:backend:v1
+    container_name: backend_container
+    networks:
+      - app_network
+    environment:
+      DB_HOST: localhost
+      DB_USER: postgres
+      DB_PASSWORD: mypassword
+      DB_DATABASE: simpledb
+      DB_PORT: 5432
+
+networks:
+  app_network:
+    external: true

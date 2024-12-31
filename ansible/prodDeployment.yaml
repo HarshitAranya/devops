@@ -1,0 +1,35 @@
+---
+- name: Deploy Docker containers on prod server
+  hosts: prod_servers
+  become: yes
+  tasks:
+    - name: Pull backend image
+      docker_image:
+        name: harshitaranya/harshitrepo:backend:v1
+        source: pull
+    - name: Pull frontend image
+      docker_image:
+        name: harshitaranya/harshitrepo:frontend:v1
+        source: pull
+    - name: Pull database image
+      docker_image:
+        name: harshitaranya/harshitrepo:database:v1
+        source: pull
+    - name: Run backend container
+      docker_container:
+        name: backend
+        image: harshitaranya/harshitrepo:backend:v1
+        state: started
+        restart_policy: always
+    - name: Run frontend container
+      docker_container:
+        name: frontend
+        image: harshitaranya/harshitrepo:frontend:v1
+        state: started
+        restart_policy: always
+    - name: Run database container
+      docker_container:
+        name: database
+        image: harshitaranya/harshitrepo:database:v1
+        state: started
+        restart_policy: always

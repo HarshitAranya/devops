@@ -1,0 +1,9 @@
+version: '3.8'
+
+networks:
+  app_network:
+    driver: bridge
+    
+# /var/lib/docker/volumes/backend_data/_data/
+volumes:
+  db_data:
