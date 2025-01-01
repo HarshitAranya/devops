@@ -146,38 +146,76 @@ pipeline {
         //     }
         // }
 
-        stages {
-            stage('Deploy with Docker Compose') {
-                steps {
-                    script {
-                        echo 'Deploying Docker containers with Compose...'
-                        // Create the directory on the prod VM if it doesn't exist
-                        sh """
-                            ssh -o StrictHostKeyChecking=no ec2-user@${instanceDnsId} 'mkdir -p /opt/docker-compose'
-                        """ 
-                        echo 'Updating variables in deploying-compose file and copy over remote vm...'                       
-                        sh """
-                            # Replace the placeholders in the docker-compose file with the secrets
-                            sed -i 's/\$POSTGRES_USER/${env.POSTGRES_USER}/' docker-compose.yml
-                            sed -i 's/\$POSTGRES_PASSWORD/${env.POSTGRES_PASSWORD}/' docker-compose.yml
-                            sed -i 's/\$POSTGRES_DB/${env.POSTGRES_DB}/' docker-compose.yml
+        // stages {
+        //     stage('Deploy with Docker Compose') {
+        //         steps {
+        //             script {
+        //                 echo 'Deploying Docker containers with Compose...'
+        //                 // Create the directory on the prod VM if it doesn't exist
+        //                 sh """
+        //                     ssh -o StrictHostKeyChecking=no ec2-user@${instanceDnsId} 'mkdir -p /opt/docker-compose'
+        //                 """ 
+        //                 echo 'Updating variables in deploying-compose file and copy over remote vm...'                       
+        //                 sh """
+        //                     # Replace the placeholders in the docker-compose file with the secrets
+        //                     sed -i 's/\$POSTGRES_USER/${env.POSTGRES_USER}/' docker-compose.yml
+        //                     sed -i 's/\$POSTGRES_PASSWORD/${env.POSTGRES_PASSWORD}/' docker-compose.yml
+        //                     sed -i 's/\$POSTGRES_DB/${env.POSTGRES_DB}/' docker-compose.yml
 
-                            # SCP to remote VM
-                            scp -i your-ssh-key docker-compose.yml user@remote:/opt/docker-compose
-                        """
-                        // Run docker-compose commands on the prod VM
-                        sh """
-                            ssh -o StrictHostKeyChecking=no ubuntu@${instanceDnsId} '
-                                cd /opt/docker-compose && \
-                                docker-compose pull && \
-                                docker-compose up -d
-                            '
-                        """                        
+        //                     # SCP to remote VM
+        //                     scp -i your-ssh-key docker-compose.yml user@remote:/opt/docker-compose
+        //                 """
+        //                 // Run docker-compose commands on the prod VM
+        //                 sh """
+        //                     ssh -o StrictHostKeyChecking=no ubuntu@${instanceDnsId} '
+        //                         cd /opt/docker-compose && \
+        //                         docker-compose pull && \
+        //                         docker-compose up -d
+        //                     '
+        //                 """                        
+        //             }
+        //         }
+        //     }
+        // }
+        pipeline {
+            agent any
+            stages {
+                stage('Run Ansible Playbook') {
+                    steps {
+                        script {
+                            echo 'Deploying Docker containers with Compose...'
+                            // Create the directory on the prod VM if it doesn't exist
+                            sh """
+                                ssh -o StrictHostKeyChecking=no ec2-user@${instanceDnsId} 'mkdir -p /opt/docker-compose'
+                            """
+                            // Using withCredentials to securely handle the secret
+                            withCredentials([string(credentialsId: 'pg-hport', variable: 'PG_HPORT')],
+                            [string(credentialsId: 'pg-cport', variable: 'PG_CPORT')]) {
+                                echo 'Updating variables in deploying-compose file and copy over remote vm...'                       
+                                sh """
+                                    # Replace the placeholders in the docker-compose file with the secrets
+                                    sed -i 's/\$POSTGRES_USER/${env.POSTGRES_USER}/' docker-compose.yml
+                                    sed -i 's/\$POSTGRES_PASSWORD/${env.POSTGRES_PASSWORD}/' docker-compose.yml
+                                    sed -i 's/\$POSTGRES_DB/${env.POSTGRES_DB}/' docker-compose.yml
+
+                                    # SCP to remote VM
+                                    scp -i your-ssh-key docker-compose.yml user@remote:/opt/docker-compose
+                                """ 
+                                // // Running the Ansible playbook and passing the secret as a variable
+                                // sh """
+                                //     ansible-playbook -i inventory.yaml create_docker_secret.yml \
+                                //     --extra-vars "pguser=${POSTGRES_USER} postgres_user=postgres_user" \
+                                //     --extra-vars "pgpass=${POSTGRES_PASSWORD} postgres_pass=postgres_pass" \
+                                //     --extra-vars "pgdb=${POSTGRES_DB} postgres_db=postgres_db" \
+                                //     --extra-vars "hport=${PG_HPORT} postgres_hport=postgres_hport" \
+                                //     --extra-vars "cport=${PG_CPORT} postgres_cport=postgres_cport"   
+                                // """
+                            }
+                        }
                     }
                 }
             }
         }
-
 
     }
 }

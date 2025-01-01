@@ -47,5 +47,30 @@
       service:
         name: docker
         state: started
-        enabled: yes         
+        enabled: yes  
+    # ctrating secret variables on remote vm
+    - name: Create Docker secret for postgres_user
+      shell: echo "{{ pguser }}" | docker secret create {{ postgres_user }} -
+
+    - name: Create Docker secret for postgres_pass
+      shell: echo "{{ pgpass }}" | docker secret create {{ postgres_pass }} -
+
+    - name: Create Docker secret for postgres_db
+      shell: echo "{{ pgdb }}" | docker secret create {{ postgres_db }} -
+
+    - name: Create Docker secret for postgres_hport
+      shell: echo "{{ hport }}" | docker secret create {{ postgres_hport }} -
+
+    - name: Create Docker secret for postgres_cport
+      shell: echo "{{ cport }}" | docker secret create {{ postgres_cport }} -
+
+# export the secret values into environment variables on remote vm
+# export POSTGRES_USER=$(cat /run/secrets/postgres_user)
+# export POSTGRES_PASSWORD=$(cat /run/secrets/postgres_password)
+# export POSTGRES_DB=$(cat /run/secrets/postgres_db)
+# export POSTGRES_HPORT=$(cat /run/secrets/postgres_hport)
+# export POSTGRES_CPORT=$(cat /run/secrets/postgres_cport)
+
+  
+             
 
