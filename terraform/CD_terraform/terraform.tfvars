@@ -4,7 +4,7 @@ region = "us-west-2"
 
 owners = "" # "AWS Account ID for Canonical (Ubuntu)"
 
-ubuntu20_name = ""
+ubuntu20_name = "prodvm"
 
 SUB_Tag_Name = ["SUB-1-VPCIP8000N8", "SUB-2-VPCIP8000N8", "SUB-3-VPCIP8000N8", "SUB-4-VPCIP8000N8"] #index 0 1 2 3
 

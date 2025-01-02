@@ -15,7 +15,8 @@ pipeline {
                 echo 'Running Terraform command...'
                 sh 'terraform init -input=false -chdir=terraform/CD_terraform'
                 // Apply the Terraform configuration
-                sh 'terraform apply -auto-approve -chdir=terraform/CD_terraform'
+                sh 'terraform apply -auto-approve -state=prodvm.tfstate -chdir=terraform/CD_terraform'
+                // terraform destroy -auto-approve -state=terraform/CD_terraform/prodvm.tfstate -chdir=terraform/CD_terraform
             }
         }
         script {

@@ -19,6 +19,7 @@ pipeline {
                 // Add your Terraform command here
                 // sh 'terraform init'
                 // sh 'terraform apply -auto-approve'
+                sh 'terraform destroy -auto-approve -state=terraform/aws_ec2.tfstate'
             }
         }
 
