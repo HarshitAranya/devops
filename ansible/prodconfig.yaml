@@ -20,7 +20,6 @@
         name: docker
         state: present
 
-
     - name: Install dependencies
       yum:
         name:
@@ -47,30 +46,77 @@
       service:
         name: docker
         state: started
-        enabled: yes  
+        enabled: yes
+
     # ctrating secret variables on remote vm
     - name: Create Docker secret for postgres_user
-      shell: echo "{{ pguser }}" | docker secret create {{ postgres_user }} -
+      community.docker.docker_secret:
+        name: postgres_user
+        data: "{{ pguser }}"
+        state: present
 
     - name: Create Docker secret for postgres_pass
-      shell: echo "{{ pgpass }}" | docker secret create {{ postgres_pass }} -
+      community.docker.docker_secret:
+        name: postgres_pass
+        data: "{{ pgpass }}"
+        state: present
 
     - name: Create Docker secret for postgres_db
-      shell: echo "{{ pgdb }}" | docker secret create {{ postgres_db }} -
+      community.docker.docker_secret:
+        name: postgres_db
+        data: "{{ pgdb }}"
+        state: present
 
     - name: Create Docker secret for postgres_hport
-      shell: echo "{{ hport }}" | docker secret create {{ postgres_hport }} -
+      community.docker.docker_secret:
+        name: postgres_hport
+        data: "{{ hport }}"
+        state: present
 
     - name: Create Docker secret for postgres_cport
-      shell: echo "{{ cport }}" | docker secret create {{ postgres_cport }} -
+      community.docker.docker_secret:
+        name: postgres_cport
+        data: "{{ cport }}"
+        state: present
 
-# export the secret values into environment variables on remote vm
+    # Export Docker secrets as environment variables
+    - name: Export POSTGRES_USER environment variable
+      environment:
+        POSTGRES_USER: "{{ lookup('pipe', 'cat /run/secrets/postgres_user') }}"
+
+    - name: Export POSTGRES_PASSWORD environment variable
+      environment:
+        POSTGRES_PASSWORD: "{{ lookup('pipe', 'cat /run/secrets/postgres_password') }}"
+
+    - name: Export POSTGRES_DB environment variable
+      environment:
+        POSTGRES_DB: "{{ lookup('pipe', 'cat /run/secrets/postgres_db') }}"
+
+    - name: Export POSTGRES_HPORT environment variable
+      environment:
+        POSTGRES_HPORT: "{{ lookup('pipe', 'cat /run/secrets/postgres_hport') }}"
+
+    - name: Export POSTGRES_CPORT environment variable
+      environment:
+        POSTGRES_CPORT: "{{ lookup('pipe', 'cat /run/secrets/postgres_cport') }}"
+
 # export POSTGRES_USER=$(cat /run/secrets/postgres_user)
 # export POSTGRES_PASSWORD=$(cat /run/secrets/postgres_password)
 # export POSTGRES_DB=$(cat /run/secrets/postgres_db)
 # export POSTGRES_HPORT=$(cat /run/secrets/postgres_hport)
 # export POSTGRES_CPORT=$(cat /run/secrets/postgres_cport)
 
+# # OR like this
+# - name: Create Docker secret for postgres_user
+#   shell: echo "{{ pguser }}" | docker secret create {{ postgres_user }} -
+# - name: Create Docker secret for postgres_pass
+#   shell: echo "{{ pgpass }}" | docker secret create {{ postgres_pass }} -
+# - name: Create Docker secret for postgres_db
+#   shell: echo "{{ pgdb }}" | docker secret create {{ postgres_db }} -
+# - name: Create Docker secret for postgres_hport
+#   shell: echo "{{ hport }}" | docker secret create {{ postgres_hport }} -
+# - name: Create Docker secret for postgres_cport
+#   shell: echo "{{ cport }}" | docker secret create {{ postgres_cport }} -
   
              
 

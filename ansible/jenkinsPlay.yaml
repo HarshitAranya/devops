@@ -43,7 +43,11 @@
       yum:
         name: docker
         state: present
-     
+
+    - name: Install Ansible Docker collection
+      command: ansible-galaxy collection install community.docker
+      become: yes
+ 
     - name: Add Jenkins repository
       get_url:
         url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
