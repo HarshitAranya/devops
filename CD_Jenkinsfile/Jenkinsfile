@@ -27,7 +27,7 @@ pipeline {
         }
         script {
             echo "Updating host in ansible hosts file"
-            writeFile(file: 'hosts', text: "[ec2_instance]\n${instanceDnsId}")
+            writeFile(file: 'hosts', text: "[prod_servers]\n${instanceDnsId}")
         }        
         stage('Run Ansible Command') {
             steps {
@@ -52,12 +52,18 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ec2-user@${instanceDnsId} 'mkdir -p /opt/docker-compose'
                     """                    
                     echo 'Updating variables in deploying-compose file and copy over remote vm...'                       
-                    sh 'scp -i your-ssh-key docker/2_DB-docker-compose.yml user@remote:/opt/docker-compose'
+                    sh 'scp -i your-ssh-key docker/*.yaml user@remote:/opt/docker-compose'
                     sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@${instanceDnsId} '
                             cd /opt/docker-compose && \
-                            docker-compose pull && \
-                            docker-compose up -d
+                            docker-compose -f 1_pre-docker-compose.yaml pull && \
+                            docker-compose -f 1_pre-docker-compose.yaml up -d && \                           
+                            docker-compose -f 2_DB-docker-compose.yaml pull && \
+                            docker-compose -f 2_DB-docker-compose.yaml up -d && \
+                            docker-compose -f 3_BE-docker-compose.yaml pull && \
+                            docker-compose -f 3_BE-docker-compose.yaml up -d && \
+                            docker-compose -f 4_FE-docker-compose.yaml pull && \
+                            docker-compose -f 4_FE-docker-compose.yaml up -d                                                       
                         '
                     """
                 }
@@ -68,18 +74,18 @@ pipeline {
 
 
 
-        stage('Run CD Pipeline Vaslidation') {
-            steps {
-                echo 'Running check all files if exists'
-                // Add your Terraform command here
-                sh 'ls'
-                sh 'ls ./tire3_WebApp'
-                sh 'scp -V'
-            }
-        }
-        stage('Run Docker Command') {
-            steps {
-                echo 'Running Docker command...'
-                sh 'docker --version'
-            }
-        }
+        // stage('Run CD Pipeline Vaslidation') {
+        //     steps {
+        //         echo 'Running check all files if exists'
+        //         // Add your Terraform command here
+        //         sh 'ls'
+        //         sh 'ls ./tire3_WebApp'
+        //         sh 'scp -V'
+        //     }
+        // }
+        // stage('Run Docker Command') {
+        //     steps {
+        //         echo 'Running Docker command...'
+        //         sh 'docker --version'
+        //     }
+        // }

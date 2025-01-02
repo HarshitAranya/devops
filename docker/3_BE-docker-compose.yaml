@@ -5,11 +5,11 @@ services:
     image: harshitaranya/harshitrepo:backend:v1
     container_name: backend_container
     networks:
-      - app_network
+      - app_network     
     environment:
-      DB_HOST: localhost
-      DB_USER: postgres
-      DB_PASSWORD: mypassword
+      DB_HOST: database # localhost
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_DATABASE: simpledb
       DB_PORT: 5432
 

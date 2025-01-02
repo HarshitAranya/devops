@@ -4,7 +4,7 @@ services:
   database:
     # image: postgres:latest
     image: harshitaranya/harshitrepo:backend:v1
-    container_name: mydb
+    container_name: database_container
     networks:
       - app_network
     volumes:

@@ -51,31 +51,31 @@
     # ctrating secret variables on remote vm
     - name: Create Docker secret for postgres_user
       community.docker.docker_secret:
-        name: postgres_user
+        name: "{{postgres_user}}"
         data: "{{ pguser }}"
         state: present
 
     - name: Create Docker secret for postgres_pass
       community.docker.docker_secret:
-        name: postgres_pass
+        name: "{{postgres_pass}}"
         data: "{{ pgpass }}"
         state: present
 
     - name: Create Docker secret for postgres_db
       community.docker.docker_secret:
-        name: postgres_db
+        name: "{{postgres_db}}"
         data: "{{ pgdb }}"
         state: present
 
     - name: Create Docker secret for postgres_hport
       community.docker.docker_secret:
-        name: postgres_hport
+        name: "{{postgres_hport}}"
         data: "{{ hport }}"
         state: present
 
     - name: Create Docker secret for postgres_cport
       community.docker.docker_secret:
-        name: postgres_cport
+        name: "{{postgres_cport}}"
         data: "{{ cport }}"
         state: present
 
