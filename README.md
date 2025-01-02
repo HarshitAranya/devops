@@ -14,7 +14,11 @@ How this repo will work:
 6. Set up the jenkins for CI pipeline by refering the code from JenkinsPipeLine/Jenkinsfile.
 7. The pipeline will use Dockerfile from tire3_WebApp and build the images and push it to docker repo.
 8. Now you can write CD part to deploy this application.
-9. In this case we will use ec2 instance and Jenkinsfile from CD.
+9. In this case we will use ec2 instance and Jenkinsfile from CD_Jenkinsfile.
+10. Create the secrets variables in Jenkins --> run the CD pipeline --> jenkinsfile will read the secrets from secrets
+   variables --> and pars it to ansible/prodconfig.yaml --> this will configure prod vm.
+11. Then pipeline will run the docker/2_DB-docker-compose.yml it will use local env variables created by 
+   prodconfig.yaml before.
 
 --In case privet repo | Store Docker Credentials in Jenkins
 Go to Jenkins Dashboard > Manage Jenkins > Manage Credentials.
