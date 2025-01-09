@@ -1,0 +1,12 @@
+git status
+git diff
+git fetch
+git diff myCodes..origin/myCodes
+
+chmod 600 VMS/ubuntu_02/id_rsa
+--pwsh
+icacls "C:\VMS\ubuntu_02\id_rsa" /inheritance:r
+icacls "C:\VMS\ubuntu_02\id_rsa" /grant:r "%username%:F"
+icacls "C:\VMS\ubuntu_02\id_rsa" /remove "BUILTIN\Users"
+
+ssh -i "C:\VMS\ubuntu_02\id_rsa" -p 22 harshit@192.168.150.128
