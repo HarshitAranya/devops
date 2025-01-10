@@ -10,3 +10,12 @@ icacls "C:\VMS\ubuntu_02\id_rsa" /grant:r "%username%:F"
 icacls "C:\VMS\ubuntu_02\id_rsa" /remove "BUILTIN\Users"
 
 ssh -i "C:\VMS\ubuntu_02\id_rsa" -p 22 harshit@192.168.150.128
+
+Install-Module -Name posh-git
+Import-Module posh-git
+$PROFILE
+New-Item -ItemType File -Path C:\Users\Admin\Documents\PowerShell\Microsoft.PowerShell_profile.ps1 -Force
+notepad.exe C:\Users\Admin\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
+Import-Module posh-git # add this in profile file
+--reload profile
+. $PROFILE

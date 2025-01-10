@@ -3,3 +3,6 @@
 *key*
 keys/**
 ansible/private_key
+
+git config --global user.email "harshit.aranya@gmail.com"
+git config --global user.name "Harshit Aranya"
