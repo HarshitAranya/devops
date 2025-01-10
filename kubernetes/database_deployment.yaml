@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-app
+  name: database-web-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: web-app
+      app: database-web-app
   template:
     metadata:
       labels:
-        app: web-app
+        app: database-web-app
     spec:
       containers:
-      - name: web-app-container
-        image: <your-dockerhub-username>/my-web-app:latest
+      - name: database-web-app-container
+        image: <your-dockerhub-username>/database-my-web-app:latest
         ports:
-        - containerPort: 80
+        - containerPort: 5432
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: web-app-service
+  name: database-web-app-service
 spec:
   selector:
-    app: web-app
+    app: database-web-app
   ports:
   - protocol: TCP
-    port: 80
-    targetPort: 80
-  type: LoadBalancer
+    port: 5432
+    targetPort: 5432
+  type: ClusterIP

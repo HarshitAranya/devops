@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-app-ingress
+spec:
+  rules:
+  - host: my.local.com  # Replace with your actual domain name or IP
+    http:
+      paths:
+      - path: /frontend
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-web-app-service  # The service for the frontend
+            port:
+              number: 80
+      - path: /backend
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-web-app-service  # The service for the backend
+            port:
+              number: 80
+      - path: /database
+        pathType: Prefix
+        backend:
+          service:
+            name: database-web-app-service  # The service for the database
+            port:
+              number: 5432
