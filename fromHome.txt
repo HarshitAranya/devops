@@ -19,3 +19,6 @@ notepad.exe C:\Users\Admin\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
 Import-Module posh-git # add this in profile file
 --reload profile
 . $PROFILE
+
+git config --global user.email "harshit.aranya@gmail.com"
+git config --global user.name "Harshit Aranya"
