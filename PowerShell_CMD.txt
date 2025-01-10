@@ -1,0 +1,6 @@
+cmd
+setx PATH "%PATH%;C:\Program Files\PowerShell\7" /M
+echo %PATH%
+
+
+
