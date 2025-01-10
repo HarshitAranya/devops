@@ -32,3 +32,4 @@ to remove the unwanted file from staging area.
 * git reset --hard <commitid>
 * git cherry-pick <commitid>
 * git revert <commitid>
+* git ls-files | grep '\.sh$'
