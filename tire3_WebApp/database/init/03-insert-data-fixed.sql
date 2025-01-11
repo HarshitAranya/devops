@@ -1,1 +1,7 @@
-ⴭ਍ⴭ䐠瑡⁡潦⁲慎敭›祭獵牥※祔数›䅔䱂⁅䅄䅔※捓敨慭›異汢捩※睏敮㩲瀠獯杴敲൳ⴊഭഊ䌊偏⁙異汢捩洮畹敳⁲椨Ɽ映汵湬浡ⱥ攠慭汩‬潭楢敬 剆䵏猠摴湩഻㌊甉摮晥湩摥甉摮晥湩摥甉摮晥湩摥਍ऴ慨獲楨ॴ⹨䁡⹧潣७㔶㘴㐵㔶ㄴ਍व慨獲楨ॴ獡晤愮摳䁦⹧潣७㔶㘴㐵㔶㐴਍श慨獲楨ॴ獡晤愮摳䁦⹧潣७㔶㘴㐵㔶㐴਍⹜਍਍ⴭ਍ⴭ丠浡㩥洠畹敳彲摩獟煥※祔数›䕓啑久䕃匠呅※捓敨慭›異汢捩※睏敮㩲瀠獯杴敲൳ⴊഭഊ匊䱅䍅⁔杰损瑡污杯献瑥慶⡬瀧扵楬⹣祭獵牥楟彤敳❱‬ⰶ琠畲⥥഻
+COPY public.myuser (id, fullname, email, mobile) FROM stdin;
+1	undefined	undefined	undefined
+2	harshit	h.a@g.com	6546546541
+3	harshit	asdf.asdf@g.com	6546546544
+4	harshit	asdf.asdf@g.com	6546546544
+\.
+SELECT pg_catalog.setval('public.myuser_id_seq', 6, true);
