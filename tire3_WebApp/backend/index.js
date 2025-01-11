@@ -14,12 +14,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // database connection
+// const db = new Client({
+//     host: 'localhost',
+//     user: 'postgres',
+//     password: 'root@123',
+//     database: 'simpledb',
+//     port: 5432, // port should be a number
+// });
+
 const db = new Client({
-    host: 'localhost',
-    user: 'postgres',
-    password: 'root@123',
-    database: 'simpledb',
-    port: 5432, // port should be a number
+    host: process.env.HOST || 'localhost',
+    user: process.env.USER || 'postgres',
+    password: process.env.PASSWORD || 'mypassword',
+    database: process.env.DATABASE || 'simpledb',
+    port: process.env.PORT || 5432,
 });
 
 // check database connection
