@@ -42,3 +42,11 @@ sudo apt install nodejs npm -y
 npm install -g code-server
 code-server
 Access VS Code in a browser using the provided URL
+
+docker-compose up -d --build -d 
+
+#for nginx
+ls /etc/nginx/conf.d/default.conf
+ls /etc/nginx/nginx.conf
+vi /etc/nginx/conf.d/default.conf
+

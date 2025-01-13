@@ -15,10 +15,12 @@ RUN npm run build --prod
 # Stage 2: Deploy with Nginx
 FROM nginx:stable AS deployer
 
+#COPY default.conf /etc/nginx/conf.d
+
 #WORKDIR /usr/share/nginx/html
 
 # Clear the default content served by Nginx
-RUN rm -rf /usr/share/nginx/html/*
+#RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built Angular app from the build stage to Nginx's default directory
 # angular18 will come from package.json
