@@ -17,6 +17,18 @@ spec:
         image: <your-dockerhub-username>/database-my-web-app:latest
         ports:
         - containerPort: 5432
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config  # Mount the ConfigMap
+        - name: secret-volume
+          mountPath: /etc/secrets  # Mount the Secret (DB_PASSWORD will be available here)
+      volumes:
+      - name: config-volume
+        configMap:
+          name: database-web-app-config  # ConfigMap for non-sensitive data
+      - name: secret-volume
+        secret:
+          secretName: database-web-app-secret  # Secret for sensitive data
 ---
 apiVersion: v1
 kind: Service
@@ -27,6 +39,6 @@ spec:
     app: database-web-app
   ports:
   - protocol: TCP
-    port: 5432
+    port: 4432
     targetPort: 5432
   type: ClusterIP

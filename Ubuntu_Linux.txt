@@ -50,3 +50,30 @@ ls /etc/nginx/conf.d/default.conf
 ls /etc/nginx/nginx.conf
 vi /etc/nginx/conf.d/default.conf
 
+chmod +x deploy.sh
+./deploy.sh
+
+#helm
+#install,update and remove the application from your kubernetes cluster
+helm install my-app ./my-app
+helm upgrade my-app ./my-app
+helm uninstall my-app
+
+helm create db-app
+db-app/
+  Chart.yaml            # Must remain the same
+  values.yaml           # Must remain the same
+  charts/               # Optional subcharts directory
+  templates/            # Templates directory with custom names
+    db-deployment.yaml  # Custom name for deployment template
+    db-service.yaml     # Custom name for service template
+    db-ingress.yaml     # Custom name for ingress template
+    db-configmap.yaml   # Custom name for configmap template
+    db-secret.yaml      # Custom name for secret template
+
+
+helm install db-app ./db-app
+helm install backend-app ./backend-app
+helm install frontend-app ./frontend-app
+
+
