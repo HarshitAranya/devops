@@ -76,4 +76,6 @@ helm install db-app ./db-app
 helm install backend-app ./backend-app
 helm install frontend-app ./frontend-app
 
-
+C:\Users\HARSHIT.ARANYA> notepad $PROFILE
+C:\Users\HARSHIT.ARANYA> .$PROFILE
+HARSHIT.ARANYA>

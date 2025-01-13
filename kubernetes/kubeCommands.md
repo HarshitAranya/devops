@@ -16,3 +16,13 @@ kubectl apply -f frontend/config.yaml
 kubectl apply -f frontend/secrets.yaml
 kubectl apply -f frontend/deployment-service.yaml
 
+OR
+
+kubectl apply -f database/
+kubectl apply -f backend/
+kubectl apply -f frontend/
+
+kubectl apply -f .
+
+
+
