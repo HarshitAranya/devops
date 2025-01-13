@@ -13,16 +13,16 @@ COPY ./frontend ./
 RUN npm run build --prod
 
 # Stage 2: Deploy with Nginx
-FROM nginx:alpine AS deployer
+FROM nginx:stable AS deployer
 
-WORKDIR /usr/share/nginx/html
+#WORKDIR /usr/share/nginx/html
 
 # Clear the default content served by Nginx
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built Angular app from the build stage to Nginx's default directory
 # angular18 will come from package.json
-COPY --from=installer /myapp/dist/angular18 ./
+COPY --from=installer /myapp/dist/angular18 /usr/share/nginx/html
 
 # Expose port 80 for HTTP traffic
 EXPOSE 80

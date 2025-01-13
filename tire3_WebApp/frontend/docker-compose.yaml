@@ -1,0 +1,15 @@
+services:
+  angular18:
+    container_name: angular18container
+    build: .
+    image: angular18:v1
+    ports:
+      - 80:80
+    expose:
+      - 80
+    networks:
+      - app_net
+      
+networks:
+  app_net:
+    driver: bridge
