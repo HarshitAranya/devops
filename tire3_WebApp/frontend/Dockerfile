@@ -6,6 +6,7 @@ WORKDIR /myapp
 # Copy package.json and install dependencies
 COPY ./frontend/package*.json ./
 RUN npm install
+RUN npx ngcc -properties es2023 browser module main --first-only --create-ivy-entry-points
 
 # Copy the rest of the frontend app and build it
 COPY ./frontend ./
