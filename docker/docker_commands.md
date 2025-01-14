@@ -150,10 +150,11 @@ docker pull nginx:alpine
 docker run -d --name myfrontend -v frontend_volume:/myapp/ --network app_net -p 3002:80 nginx:alpine
 //docker cp /home/harshit/devops/tire3_WebApp/frontend/angular.json myfrontend:/myapp/
 docker exec -it myfrontend sh
-apk update
-apk add npm
+apk/apt update
 cd /myapp
+apk add npm / apt install npm
 npm install -g @angular/cli
+npm install
 ng version
 //npm install
 npm run build --prod
