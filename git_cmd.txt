@@ -32,6 +32,7 @@ to remove the unwanted file from staging area.
 * git reset --hard <commitid>
 * git cherry-pick <commitid>
 * git revert <commitid>
+* git ls-files | grep '\.sh$'
 * cat .git/config
 * git remote add origin <remote-repository-URL>
 * git branch --set-upstream-to=origin/<branch> myCode

@@ -1,5 +1,6 @@
 cmd
 setx PATH "%PATH%;C:\Program Files\PowerShell\7" /M
+setx PATH "C:\Program Files (x86)\VMware\VMware Workstation" /M
 echo %PATH%
 
 
