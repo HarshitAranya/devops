@@ -76,5 +76,38 @@ kubectl apply -f frontend/
 
 kubectl apply -f .
 
+alias kubectl=k
+# v35
+k get all -A -o yaml > backup.yaml
+cd /etc/kubernetes/manifests/
+less etcd.yaml
+apt install etcd-client
+etcdctl
+ETCDCTL_API=3 etcdctl snapshot
+export ETCDCTL_API=3
+#After backup
+etcdctl --write-out=table snapshots /opt/etcd-backup.db
+du -sh filename # to check the file size
+
+# v36
+k get pod -n=kube-system -w
+k get deploy -n=kube-system
+k edit nameOfdeployment
+k describe deployment nameOfdeployment
+k logs nameOfpod
+k edit nameOfdeployment -n=kube-system
+K get netpol
+k gescribe netpol nameOfnetpol
+k get po -o wide
+k get po --show-labels
+k get ep
+k get all
 
 
+crictl ps # same as docker but its docker d - it will show all running pods
+crictl ps |grep api
+crictl logs containerid
+crictl logs -f containerid
+cd /etc/kubernetes/manifests/
+crictl pull nginx
+crictl runp pod-config.json
