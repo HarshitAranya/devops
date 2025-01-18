@@ -3,6 +3,8 @@
 * git branch --set-upstream-to=origin/dev devlocal
 * git remote show origin
 * git remote add origin https://<url>/your_repo_name
+* git remote set-url origin https://github.com/HarshitAranya/devops.git
+* git remote set-url origin https://github.com/HarshitAranya/devops.git
 * git config --global push.default current (current = in which branch you are working)
 * git config --global difftool.vscode.cmd "code --wait --diff $LOCAL $REMOTE"
 * git config --global advice.addIgnoredFile false

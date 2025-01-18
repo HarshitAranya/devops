@@ -177,6 +177,7 @@ docker pull nginx:alpine
 docker run -d --name myfrontend -v frontend_volume:/myapp/ --network app_net -p 3002:80 nginx:alpine
 //docker cp /home/harshit/devops/tire3_WebApp/frontend/angular.json myfrontend:/myapp/
 docker exec -it myfrontend sh
+apt-get install iputils-ping
 apt update && apt install -y vim
 or
 apk add --no-cache vim
@@ -192,6 +193,9 @@ rm -rf /usr/share/nginx/html/*
 cp -r /myapp/dist/angular18/* /usr/share/nginx/html/
 sudo chown -R nginx:nginx /usr/share/nginx/html/
 chmod -R 755 /usr/share/nginx/html/
+nginx -t
+nginx -s reload
+
 systemctl reload nginx
 
 docker run -it \
