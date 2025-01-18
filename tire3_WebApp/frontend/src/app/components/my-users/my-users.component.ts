@@ -20,7 +20,7 @@ export class MyUsersComponent {
     userList: MyUser [] = [];
     nameOfthis(){
       // debugger;
-      this.http.get<{ message: string, data: MyUser[] }>("http://localhost:3001/user").subscribe((userResult)=>{
+      this.http.get<{ message: string, data: MyUser[] }>("http://backendapp:3001/user").subscribe((userResult)=>{
         // debugger;
         this.userList = userResult.data;
       })

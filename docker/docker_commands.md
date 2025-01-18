@@ -66,6 +66,7 @@ docker secret ls
 echo -n "root@123" | docker secret create dockersecretpassword -
 echo -n "postgres" | docker secret create dockersecretusername -
 
+=================================================================================================
 --backend
 docker pull node:16-alpine
 docker run -it node:16-alpine /bin/sh #test images before running Containers
@@ -92,7 +93,7 @@ docker service create \
   --name mybackend \
   --secret dockersecretpassword \
   --secret dockersecretusername \
-  -e HOST=localhost \
+  -e HOST=192.168.150.128 \
   -e USER=postgres \
   -e DATABASE=simpledb \
   -e PORT=4432 \
@@ -108,7 +109,7 @@ docker exec mybackend sh -c "cd /app && npm install --production"
 docker volume create backend_volume
 cp /home/harshit/devops/tire3_WebApp/backend/package*.json /var/lib/docker/volumes/backend_volume/_data/
 cp /home/harshit/devops/tire3_WebApp/backend/*.js /var/lib/docker/volumes/backend_volume/_data/
-
+cp /home/harshit/devops/tire3_WebApp/backend/index.js /var/lib/docker/volumes/backend_volume/_data/
 docker run -it \
   --name mybackend \
   -e HOST=172.18.0.1 \
@@ -121,6 +122,18 @@ docker run -it \
   --network app_net \
   node:16-alpine /bin/sh
 
+docker run -it \
+  --name backend \
+  -e HOST=172.18.0.1 \
+  -e USERNAME=postgres \
+  -e PASSWORD=root@123 \
+  -e DATABASE=simpledb \
+  -e PORT=4432 \
+  -v backend_volume:/app/ \
+  -p 3001:3001 \
+  --network app_net \
+  mybackend-configured18 /bin/sh
+
 cd /app && npm install --production
 apk update
 apk add postgresql-client
@@ -128,7 +141,21 @@ exit
 
 docker commit mybackend mybackend-configured
 docker rm mybackend
-docker run -d --name mybackend -p 3001:3001 -v backend_volume:/app/ --network app_net mybackend-configured sh -c "cd /app && node index.js"
+
+
+docker run -d \
+  --name backend \
+  -e HOST=172.18.0.1 \
+  -e USERNAME=postgres \
+  -e PASSWORD=root@123 \
+  -e DATABASE=simpledb \
+  -e PORT=4432 \
+  -v backend_volume:/app/ \
+  -p 3001:3001 \
+  --network app_net \
+  backendapp sh -c "cd /app && node index.js"
+
+
 curl http://localhost:3001/
 curl http://192.168.150.128:3000/health
 docker exec -it mybackend ps aux
@@ -139,7 +166,7 @@ apk add postgresql-client
 psql -h localhost -p 4432 -U postgres -d simpledb
 psql -h $HOST -p 4432 -U postgres -d simpledb
 
-
+=================================================================================================
 --frontend
 docker volume create frontend_volume
 cp -r /home/harshit/devops/tire3_WebApp/frontend/* /var/lib/docker/volumes/frontend_volume/_data/
@@ -150,6 +177,9 @@ docker pull nginx:alpine
 docker run -d --name myfrontend -v frontend_volume:/myapp/ --network app_net -p 3002:80 nginx:alpine
 //docker cp /home/harshit/devops/tire3_WebApp/frontend/angular.json myfrontend:/myapp/
 docker exec -it myfrontend sh
+apt update && apt install -y vim
+or
+apk add --no-cache vim
 apk/apt update
 cd /myapp
 apk add npm / apt install npm
@@ -163,6 +193,13 @@ cp -r /myapp/dist/angular18/* /usr/share/nginx/html/
 sudo chown -R nginx:nginx /usr/share/nginx/html/
 chmod -R 755 /usr/share/nginx/html/
 systemctl reload nginx
+
+docker run -it \
+  --name myfrontend \
+  -v frontend_volume:/myapp/ \
+  -p 80:80 \
+  --network app_net \
+  frontend18 /bin/sh
 
 
 

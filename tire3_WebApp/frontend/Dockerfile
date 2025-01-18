@@ -13,8 +13,8 @@ COPY ./frontend ./
 RUN npm run build --prod
 
 # Stage 2: Deploy with Nginx
-FROM nginx:stable AS deployer
-
+# FROM nginx:stable AS deployer
+FROM nginx:alpine AS deployer
 #COPY default.conf /etc/nginx/conf.d
 
 #WORKDIR /usr/share/nginx/html
@@ -24,6 +24,8 @@ FROM nginx:stable AS deployer
 
 # Copy built Angular app from the build stage to Nginx's default directory
 # angular18 will come from package.json
+# RUN apt update && apt install -y vim # for atable/latest
+# RUN apk add --no-cache vim #for alpine
 COPY --from=installer /myapp/dist/angular18 /usr/share/nginx/html
 
 # Expose port 80 for HTTP traffic

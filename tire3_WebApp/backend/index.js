@@ -47,11 +47,13 @@ try {
     // Read the secrets from the files
     password = fs.readFileSync('/run/secrets/dockersecretpassword', 'utf8').trim();
     username = fs.readFileSync('/run/secrets/dockersecretusername', 'utf8').trim();
+    // localhost = process.env.LOCALHOST || 'localhost';
 } catch (err) {
     console.error('Error reading secret file:', err.message);
     // Fallback to environment variables if needed
     password = process.env.PASSWORD || 'Dummy_Password';
     username = process.env.USERNAME || 'Dummy_User';
+    // localhost = process.env.LOCALHOST || 'localhost';
 }
 
 const db = new Client({
@@ -88,5 +90,5 @@ app.get('/user',(req,res)=>{
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on http://${host}:${port}`);
 });
