@@ -3,7 +3,6 @@ sudo chmod 666 /var/run/docker.sock
 
 When you run docker compose up from the D:\devops\docker directory, Docker Compose will look for a file named docker-compose.yaml or docker-compose.yml in the current directory
 
-
 docker network create --driver bridge app_network
 docker network ls
 docker network inspect app_net --format= '{{json .Containers}}' | jq
@@ -144,8 +143,8 @@ docker rm mybackend
 
 
 docker run -d \
-  --name backend \
-  -e HOST=172.18.0.1 \
+  --name backendapp \
+  -e HOST=192.168.150.128 \
   -e USERNAME=postgres \
   -e PASSWORD=root@123 \
   -e DATABASE=simpledb \
@@ -153,7 +152,7 @@ docker run -d \
   -v backend_volume:/app/ \
   -p 3001:3001 \
   --network app_net \
-  backendapp sh -c "cd /app && node index.js"
+  backendapp:latest sh -c "cd /app && node index.js"
 
 
 curl http://localhost:3001/
@@ -205,7 +204,12 @@ docker run -it \
   --network app_net \
   frontend18 /bin/sh
 
-
-
+docker run -d \
+  --name frontendapp \
+  -v frontend_volume:/myapp/ \
+  --network app_net \
+  -p 80:80 \
+  frontend18:v2 \
+  nginx -g "daemon off;"
 
 

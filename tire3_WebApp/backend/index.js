@@ -7,7 +7,9 @@ const { Client } = require('pg');
 const port = 3001;
 const app = express();
 
-app.use(cors());
+// app.use(cors());
+
+app.use(cors({ origin: 'http://192.168.150.128' })); // Allow requests from your frontend URL
 
 // parse application/json
 app.use(bodyParser.json());
