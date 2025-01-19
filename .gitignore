@@ -4,3 +4,4 @@
 keys/**
 ansible/private_key
 *.docx
+*.env

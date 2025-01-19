@@ -18,6 +18,39 @@ docker volume create my_volume
 docker volume ls
 docker volume rm my_volume
 
+export dbport="simpledb"
+
+cd /home/harshit/devops/tire3_WebApp/database/
+docker build -t databaseserver:d1 .
+rm -f /tmp/.env
+touch /tmp/.env
+export dbuser="postgres"
+export dbpass="root@123"
+export dbname="simpledb"
+
+echo "POSTGRES_USER=$dbuser" >> .env
+echo "POSTGRES_PASSWORD=$dbpass" >> .env
+echo "POSTGRES_DB=$dbname" >> .env
+
+docker run -it \
+  --name mydb \
+  --env-file .env \
+  -v db_volume:/docker-entrypoint-initdb.d/ \
+  -p 4432:5432 \
+  databaseserver:d1 \
+  /bin/sh
+
+
+docker run -d \
+  --name mydb \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=root@123 \
+  -e POSTGRES_DB=simpledb \
+  -v db_volume:/docker-entrypoint-initdb.d/ \
+  -p 4432:5432 \
+  --network app_net \
+  postgres 
+
 docker pull postgres:latest
 docker run -d \
   --name mydb \
@@ -43,6 +76,7 @@ docker run -d \
   -p 4432:5432 \
   --network app_net \
   postgres 
+
 docker exec -it mydb psql -U postgres -d simpledb -c "SELECT * FROM myuser;"
 xxd 01-create-schema-fixed.sql
 file -i 03-insert-data.sql
@@ -64,6 +98,25 @@ docker swarm init --advertise-addr 192.168.150.128
 docker secret ls
 echo -n "root@123" | docker secret create dockersecretpassword -
 echo -n "postgres" | docker secret create dockersecretusername -
+echo -n "simpledb" | docker secret create dockersecretdbname -
+
+# in this case Dockerfile is not reqired
+docker service create \
+  --name mydb \
+  --secret source=dockersecretpassword,target=postgres_password \
+  --secret source=dockersecretusername,target=postgres_user \
+  --secret source=dockersecretdbname,target=postgres_db \
+  -p 4432:5432 \
+  --network app_net \
+  postgres:latest
+
+# create .env file and update before running this code
+docker run -d \
+  --name mydb \
+  --env-file .env \
+  -v db_volume:/docker-entrypoint-initdb.d/ \
+  -p 4432:5432 \
+  postgres
 
 =================================================================================================
 --backend
