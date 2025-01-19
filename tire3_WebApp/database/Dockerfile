@@ -5,8 +5,8 @@ WORKDIR /dbtmp
 # Copy .sql files to the Postgres init directory
 COPY ./init/*.sql /docker-entrypoint-initdb.d/
 
-COPY ./dbenvs.sh ./
-RUN chmod +x /dbtmp/dbenvs.sh
+# COPY ./dbenvs.sh ./
+# RUN chmod +x /dbtmp/dbenvs.sh
 # Expose the default PostgreSQL port
 EXPOSE 5432
 

@@ -22,23 +22,27 @@ export dbport="simpledb"
 
 cd /home/harshit/devops/tire3_WebApp/database/
 docker build -t databaseserver:d1 .
-rm -f /tmp/.env
-touch /tmp/.env
+rm -f /home/harshit/devops/tire3_WebApp/database/.env
+touch /home/harshit/devops/tire3_WebApp/database/.env
 export dbuser="postgres"
 export dbpass="root@123"
 export dbname="simpledb"
+export dbport="4432"
 
 echo "POSTGRES_USER=$dbuser" >> .env
 echo "POSTGRES_PASSWORD=$dbpass" >> .env
 echo "POSTGRES_DB=$dbname" >> .env
 
-docker run -it \
-  --name mydb \
+docker run -d \
+  --name databaseapp \
   --env-file .env \
   -v db_volume:/docker-entrypoint-initdb.d/ \
-  -p 4432:5432 \
-  databaseserver:d1 \
-  /bin/sh
+  -p $dbport:5432 \
+  databaseserver:d1
+rm -f /home/harshit/devops/tire3_WebApp/database/.env
+
+docker exec -it databaseapp psql -U postgres -d simpledb -c "SELECT * FROM myuser;"
+psql -h localhost -p 4432 -U postgres -d simpledb
 
 
 docker run -d \
@@ -77,7 +81,9 @@ docker run -d \
   --network app_net \
   postgres 
 
+psql -h localhost -p 4432 -U postgres -d simpledb
 docker exec -it mydb psql -U postgres -d simpledb -c "SELECT * FROM myuser;"
+
 xxd 01-create-schema-fixed.sql
 file -i 03-insert-data.sql
 iconv -f UTF-16LE -t UTF-8 01-create-schema.sql -o 01-create-schema-fixed.sql
