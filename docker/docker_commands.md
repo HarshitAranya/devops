@@ -1,8 +1,6 @@
-sudo usermod -aG docker $USER
-sudo chmod 666 /var/run/docker.sock
-
-When you run docker compose up from the D:\devops\docker directory, Docker Compose will look for a file named docker-compose.yaml or docker-compose.yml in the current directory
-
+# Final code for dockerfile
+=================================================================================================
+# Networking
 docker network create --driver bridge app_network
 docker network ls
 docker network inspect app_net --format= '{{json .Containers}}' | jq
@@ -13,21 +11,28 @@ docker network create \
   --subnet=192.168.100.0/24 \
   --gateway=192.168.0.1 \
   app_net
-
+=================================================================================================
+# Volumes
 docker volume create my_volume
 docker volume ls
 docker volume rm my_volume
 
-export dbport="simpledb"
-
+docker volume create db_volume
+=================================================================================================
+# Database container creation (Refer local file for user and password)
 cd /home/harshit/devops/tire3_WebApp/database/
+cp -r ./init/*.sql /var/lib/docker/volumes/db_volume/_data/
+
 docker build -t databaseserver:d1 .
+
 rm -f /home/harshit/devops/tire3_WebApp/database/.env
 touch /home/harshit/devops/tire3_WebApp/database/.env
-export dbuser="postgres"
-export dbpass="root@123"
-export dbname="simpledb"
-export dbport="4432"
+
+export dbuser="tire3_WebApp_database_dbinfo_txt"
+export dbpass="tire3_WebApp_database_dbinfo_txt"
+export dbname="tire3_WebApp_database_dbinfo_txt"
+export dhport="tire3_WebApp_database_dbinfo_txt"
+export dtport="tire3_WebApp_database_dbinfo_txt"
 
 echo "POSTGRES_USER=$dbuser" >> .env
 echo "POSTGRES_PASSWORD=$dbpass" >> .env
@@ -37,13 +42,68 @@ docker run -d \
   --name databaseapp \
   --env-file .env \
   -v db_volume:/docker-entrypoint-initdb.d/ \
-  -p $dbport:5432 \
+  -p $dhport:$dtport \
+  --network app_net \
   databaseserver:d1
 rm -f /home/harshit/devops/tire3_WebApp/database/.env
 
 docker exec -it databaseapp psql -U postgres -d simpledb -c "SELECT * FROM myuser;"
 psql -h localhost -p 4432 -U postgres -d simpledb
+=================================================================================================
+# Backend container creation and deployment
+cd /home/harshit/devops/tire3_WebApp/backend/
+docker build -t backendserver:d1 .
 
+rm -f /home/harshit/devops/tire3_WebApp/backend/.env
+touch /home/harshit/devops/tire3_WebApp/backend/.env
+
+export dbuser="tire3_WebApp_backend_dbinfo_txt"
+export dbpass="tire3_WebApp_backend_dbinfo_txt"
+export dbname="tire3_WebApp_backend_dbinfo_txt"
+export dbport="tire3_WebApp_backend_dbinfo_txt"
+export dhport="tire3_WebApp_backend_dbinfo_txt"
+export dtport="tire3_WebApp_backend_dbinfo_txt"
+export apihost="tire3_WebApp_backend_dbinfo_txt"
+
+echo "USERNAME=$dbuser" >> .env
+echo "PASSWORD=$dbpass" >> .env
+echo "DATABASE=$dbname" >> .env
+echo "DB_PORT=$dbport" >> .env
+echo "APIHOST=$apihost" >> .env
+
+docker run -d \
+  --name backendapp \
+  --env-file .env \
+  -p $dhport:$dtport \
+  --network app_net \
+  backendserver:d1 \
+  sh -c "cd /app && node index.js"
+
+docker exec -it backendapp curl http://localhost:3001
+curl http://localhost:4001
+
+=================================================================================================
+# Frontend container creation and deployment
+cd /home/harshit/devops/tire3_WebApp/frontend/
+
+docker build -t frontendserver:d1 .
+
+docker run -d \
+  --name frontendapp \
+  --network app_net \
+  -p 80:80 \
+  frontendserver:d1
+
+=================================================================================================
+# RnD -
+
+--mydb
+sudo usermod -aG docker $USER
+sudo chmod 666 /var/run/docker.sock
+
+When you run docker compose up from the D:\devops\docker directory, Docker Compose will look for a file named docker-compose.yaml or docker-compose.yml in the current directory
+
+export dbport="simpledb"
 
 docker run -d \
   --name mydb \
@@ -116,16 +176,8 @@ docker service create \
   --network app_net \
   postgres:latest
 
-# create .env file and update before running this code
-docker run -d \
-  --name mydb \
-  --env-file .env \
-  -v db_volume:/docker-entrypoint-initdb.d/ \
-  -p 4432:5432 \
-  postgres
 
-=================================================================================================
---backend
+--mybackend  
 docker pull node:16-alpine
 docker run -it node:16-alpine /bin/sh #test images before running Containers
 
@@ -168,6 +220,7 @@ docker volume create backend_volume
 cp /home/harshit/devops/tire3_WebApp/backend/package*.json /var/lib/docker/volumes/backend_volume/_data/
 cp /home/harshit/devops/tire3_WebApp/backend/*.js /var/lib/docker/volumes/backend_volume/_data/
 cp /home/harshit/devops/tire3_WebApp/backend/index.js /var/lib/docker/volumes/backend_volume/_data/
+
 docker run -it \
   --name mybackend \
   -e HOST=172.18.0.1 \
@@ -201,19 +254,6 @@ docker commit mybackend mybackend-configured
 docker rm mybackend
 
 
-docker run -d \
-  --name backendapp \
-  -e HOST=192.168.150.128 \
-  -e USERNAME=postgres \
-  -e PASSWORD=root@123 \
-  -e DATABASE=simpledb \
-  -e PORT=4432 \
-  -v backend_volume:/app/ \
-  -p 3001:3001 \
-  --network app_net \
-  backendapp:latest sh -c "cd /app && node index.js"
-
-
 curl http://localhost:3001/
 curl http://192.168.150.128:3000/health
 docker exec -it mybackend ps aux
@@ -224,9 +264,7 @@ apk add postgresql-client
 psql -h localhost -p 4432 -U postgres -d simpledb
 psql -h $HOST -p 4432 -U postgres -d simpledb
 
-=================================================================================================
 --frontend
-docker volume create frontend_volume
 cp -r /home/harshit/devops/tire3_WebApp/frontend/* /var/lib/docker/volumes/frontend_volume/_data/
 ls /var/lib/docker/volumes/frontend_volume/_data/
 rm /var/lib/docker/volumes/frontend_volume/_data/Dockerfile
@@ -270,5 +308,3 @@ docker run -d \
   -p 80:80 \
   frontend18:v2 \
   nginx -g "daemon off;"
-
-

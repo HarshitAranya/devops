@@ -4,12 +4,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Client } = require('pg');
-const port = 3001;
+// const port = 3001;
+const port = process.env.TPORT || 3001;
+const apihost = process.env.APIHOST || '192.168.150.128';
 const app = express();
 
 // app.use(cors());
 
-app.use(cors({ origin: 'http://192.168.150.128' })); // Allow requests from your frontend URL
+app.use(cors({ origin: `http://${apihost}` })); // Allow requests from your frontend URL
 
 // parse application/json
 app.use(bodyParser.json());
@@ -63,7 +65,7 @@ const db = new Client({
     user: username,
     password: password,
     database: process.env.DATABASE || 'simpledb',
-    port: process.env.PORT || 5432,
+    port: process.env.DB_PORT || 5432,
 });
 
 // check database connection
