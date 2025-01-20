@@ -1,0 +1,139 @@
+// Jenkinsfile
+
+pipeline {
+    agent any
+
+    environment {        
+        POSTGRES_USER = credentials('postgres-user')  // Use the ID of the secret
+        POSTGRES_PASSWORD = credentials('postgres-password')
+        POSTGRES_DB = credentials('postgres-db')
+        POSTGRES_HPORT = credentials('postgres-hport')
+        POSTGRES_TPORT = credentials('postgres-cport')
+    }
+    
+    stages {
+        stage('Run Pipeline Vaslidation') {
+            steps {
+                echo 'Running check all files if exists'
+                // Add your Terraform command here
+                sh 'ls'
+                sh 'ls ./tire3_WebApp'
+            }
+        }
+        // in case privet repo
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    """
+                }
+            }
+        }         
+        stage('Docker Pull') {
+            steps {
+                echo 'Running Docker Push...'
+                sh 'docker pull harshitaranya/harshitrepo:backend:v1'
+                sh 'docker pull harshitaranya/harshitrepo:frontend:v1'
+                sh 'docker pull harshitaranya/harshitrepo:database:v1'
+            }
+        }
+
+        stage('Creating docker network and volume') {
+            steps {
+                echo 'Running docker command...'
+                sh '''
+                    # Create network with a specific subnet and gateway
+                    docker network create \
+                        --driver bridge \
+                        --subnet=192.168.100.0/24 \
+                        --gateway=192.168.100.1 \
+                        app_net
+
+                    # Inspect the app_net network and format the output with jq
+                    docker network inspect app_net --format '{{json .Containers}}' | jq
+
+                    # Create a Docker volume for the database
+                    docker volume create db_volume
+                '''
+
+                // Verify if the network and volume were created successfully
+                sh 'docker network ls | grep app_net'
+                sh 'docker volume ls | grep db_volume'
+            }
+        }
+        
+        stage('Run Build Command') {
+            steps {
+                echo 'Running build command...'
+                // Add your build command here (e.g., Maven, Gradle, etc.)
+                sh './npmBuild.sh'
+                sh 'ls /frontend/dist/angular18/browser*'
+            }
+        } 
+                            
+        stage('Variables setup and configuration') {
+            steps {
+                echo 'Updating variables...'
+                sh 'pwd'
+                sh 'ls'
+                sh 'rm -f .env'
+                sh 'touch .env'
+                sh '''
+                    export dbuser=${POSTGRES_USER}
+                    export dbpass=${POSTGRES_PASSWORD}
+                    export dbname=${POSTGRES_DB}
+                    export dhport=${POSTGRES_HPORT}
+                    export dtport=${POSTGRES_TPORT}
+                    echo "POSTGRES_USER=$dbuser" >> .env
+                    echo "POSTGRES_PASSWORD=$dbpass" >> .env
+                    echo "POSTGRES_DB=$dbname" >> .env
+                '''
+            }
+        }
+        stage('Run Scan Code Command') {
+            steps {
+                echo 'Running code scan...'
+                // Add your code scanning command here (e.g., SonarQube, etc.)
+                // sh 'sonar-scanner'
+            }
+        }
+
+        stage('Run Docker Command') {
+            steps {
+                echo 'Running Docker command...'
+                // harshitaranya/harshitrepo:tagname
+                // Add your Docker command here (e.g., build, run, etc.)
+                // docker build -t angular-app .
+                // sh 'docker build -t <your-dockerhub-username>/my-web-app:latest ../docker/Dockerfile'
+                // sh 'docker build -t harshitaranya/harshitrepo:backend:v1 -f ../docker/Dockerfile'
+                // sh 'docker run myappimage -d -p 8080:80 mywebapp:v1'
+                // sh 'docker push harshitaranya/harshitrepo:backend:v1'
+                // sh 'docker push <your-dockerhub-username>/my-web-app:latest'
+                sh 'docker --version'
+            }
+        }
+        stage('Build Backend') {
+            steps {
+                echo 'Running Docker build backend...'
+                sh 'docker build -t harshitaranya/harshitrepo:backend:v1 -f ../tire3_WebApp/backend/Dockerfile'
+                // sh 'docker push harshitaranya/harshitrepo:backend:v1'
+            }
+        }
+        stage('Build Frontend') {
+            steps {
+                echo 'Running Docker build frontend...'
+                sh 'docker build -t harshitaranya/harshitrepo:frontend:v1 -f ../tire3_WebApp/frontend/Dockerfile'
+                // sh 'docker push harshitaranya/harshitrepo:backend:v1'
+            }
+        }
+        stage('Build Database') {
+            steps {
+                echo 'Running Docker build database...'
+                sh 'docker build -t harshitaranya/harshitrepo:database:v1 -f ../tire3_WebApp/database/Dockerfile'
+                // sh 'docker push harshitaranya/harshitrepo:backend:v1'
+            }
+        }
+        
+    }
+}

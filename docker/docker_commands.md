@@ -9,7 +9,7 @@ docker network rm app_network
 docker network create \
   --driver bridge \
   --subnet=192.168.100.0/24 \
-  --gateway=192.168.0.1 \
+  --gateway=192.168.100.1 \
   app_net
 =================================================================================================
 # Volumes

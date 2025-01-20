@@ -1,0 +1,80 @@
+// Jenkinsfile
+
+pipeline {
+    agent any
+    
+    stages {
+        stage('Run Pipeline Vaslidation') {
+            steps {
+                echo 'Running check all files if exists'
+                // Add your Terraform command here
+                sh 'ls'
+                sh 'ls ./tire3_WebApp'
+            }
+        }
+        stage('Creating docker image for database') {
+            steps {
+                echo 'Creating database image'
+                sh 'cd tire3_WebApp/database/'
+                sh 'cp -r ./init/*.sql /var/lib/docker/volumes/db_volume/_data/'
+                sh 'docker build -t harshitaranya/harshitrepo:database_v1 .'
+                sh 'cd ../..'
+            }
+        }
+        stage('Creating docker image for backend') {
+            steps {
+                echo 'Creating backend image'
+                sh 'docker build -t harshitaranya/harshitrepo:backend_v1 ./tire3_WebApp/backend/'
+            }
+        }
+        stage('Run Build Command') {
+            steps {
+                echo 'Running build command...'
+                sh './npmBuild.sh'
+                sh 'ls /frontend/dist/angular18/browser*'
+            }
+        } 
+        stage('Creating docker image for frontend') {
+            steps {
+                echo 'Creating frontend image'
+                // sh 'cd tire3_WebApp/frontend/'
+                // sh 'docker build -t frontendserver:d1 .'
+                sh 'docker build -t harshitaranya/harshitrepo:frontend_v1 -f ./tire3_WebApp/frontend/Dockerfile .'
+            }
+        }                     
+        
+        stage('Run Scan Code Command') {
+            steps {
+                echo 'Running code scan...'
+            }
+        }
+        in case privet repo
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    """
+                }
+            }
+        }
+        stage('Docker Tags for images') {
+            steps {
+                echo 'Tagging images...'
+                sh 'docker push harshitaranya/harshitrepo:backend_v1'
+                sh 'docker push harshitaranya/harshitrepo:frontend_v1'
+                sh 'docker tag harshitaranya/harshitrepo:database_v1 harshitaranya/harshitrepo:v1'
+            }
+        }
+        
+         
+        stage('Docker Push') {
+            steps {
+                echo 'Running Docker Push...'
+                sh 'docker push harshitaranya/harshitrepo:backend_v1'
+                sh 'docker push harshitaranya/harshitrepo:frontend_v1'
+                sh 'docker push harshitaranya/harshitrepo:database_v1'
+            }
+        }
+    }
+}

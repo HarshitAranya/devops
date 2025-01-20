@@ -1,0 +1,113 @@
+// Jenkinsfile
+
+pipeline {
+    agent any
+
+    environment {        
+        POSTGRES_USER = credentials('postgres-user')  // Use the ID of the secret
+        POSTGRES_PASSWORD = credentials('postgres-password')
+        POSTGRES_DB = credentials('postgres-db')
+        POSTGRES_HPORT = credentials('postgres-hport')
+        POSTGRES_TPORT = credentials('postgres-cport')
+    }
+    
+    stages {
+        stage('Run Pipeline Vaslidation') {
+            steps {
+                echo 'Running check all files if exists'
+                // Add your Terraform command here
+                sh 'ls'
+                sh 'ls ./tire3_WebApp'
+                sh 'docker --version'
+            }
+        }
+        // in case privet repo
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    """
+                }
+            }
+        }         
+        stage('Docker Pull') {
+            steps {
+                echo 'Running Docker Push...'
+                sh 'docker pull harshitaranya/harshitrepo:backend:v1'
+                sh 'docker pull harshitaranya/harshitrepo:frontend:v1'
+                sh 'docker pull harshitaranya/harshitrepo:database:v1'
+            }
+        }
+
+        stage('Creating docker network and volume') {
+            steps {
+                echo 'Running docker command...'
+                sh '''
+                    # Create network with a specific subnet and gateway
+                    docker network create \
+                        --driver bridge \
+                        --subnet=192.168.100.0/24 \
+                        --gateway=192.168.100.1 \
+                        app_net
+
+                    # Inspect the app_net network and format the output with jq
+                    docker network inspect app_net --format '{{json .Containers}}' | jq
+
+                    # Create a Docker volume for the database
+                    docker volume create db_volume
+                '''
+
+                // Verify if the network and volume were created successfully
+                sh 'docker network ls | grep app_net'
+                sh 'docker volume ls | grep db_volume'
+            }
+        }
+                            
+        stage('Variables setup and configuration') {
+            steps {
+                echo 'Updating variables...'
+                sh 'pwd'
+                sh 'ls'
+                sh 'rm -f .env'
+                sh 'touch .env'
+                sh '''
+                    export dbuser=${POSTGRES_USER}
+                    export dbpass=${POSTGRES_PASSWORD}
+                    export dbname=${POSTGRES_DB}
+                    export dhport=${POSTGRES_HPORT}
+                    export dtport=${POSTGRES_TPORT}
+                    echo "POSTGRES_USER=$dbuser" >> .env
+                    echo "POSTGRES_PASSWORD=$dbpass" >> .env
+                    echo "POSTGRES_DB=$dbname" >> .env
+                '''
+            }
+        }
+        stage('Deployment of database') {
+            steps {
+                echo 'Running database...'
+                sh '''
+                    docker run -d \
+                     --name databaseapp \
+                     --env-file .env \
+                     -v db_volume:/docker-entrypoint-initdb.d/ \
+                     -p $dhport:$dtport \
+                     --network app_net \
+                     harshitaranya/harshitrepo:database:v1
+                '''
+            }
+        }         
+
+
+
+        stage('Run Build Command') {
+            steps {
+                echo 'Running build command...'
+                // Add your build command here (e.g., Maven, Gradle, etc.)
+                sh './npmBuild.sh'
+                sh 'ls /frontend/dist/angular18/browser*'
+            }
+        } 
+        
+    }
+}
