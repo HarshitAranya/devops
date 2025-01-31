@@ -33,7 +33,15 @@ if ($oldPath.Split(';') -inotcontains 'C:\minikube'){
 
 minikube version
 minikube drivers
+minikube update
+
 minikube start
+minikube start --driver=hyperv 
+minikube start --driver=hyperv --memory 3048
+minikube start --driver=hyperv --memory 3048 --insecure-registry
+minikube start --driver=hyperv --memory 3048 --image-repository="docker.io"
+
+
 minikube start --driver vmware
 
 minikube delete --profile=minikube
@@ -42,6 +50,7 @@ minikube start --profile=minikube
 minikube delete --profile=minikube
 minikube start --profile=minikube --driver=vmware
 
+minikube profile list
 minikube status
 
 kubectl get po -A

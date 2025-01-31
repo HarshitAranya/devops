@@ -11,6 +11,7 @@ How this repo will work:
 4. main.tf will call terraform modules and it will create 2 vms in VPC. One is for jenkins 
    master and other is for slave.
 5. Run ansible/jenkinsPlay.yaml to configure both vms as per out requirements.
+-- KUBERNET AND JENKINS PIPELINE
 6. Set up the jenkins for CI pipeline by refering the code from JenkinsPipeLine/Jenkinsfile.
 7. The pipeline will delete the aws_ec2 and use Dockerfile from tire3_WebApp and build the images and push it to docker repo.
 8. Now you can write CD part to deploy this application.
