@@ -79,3 +79,8 @@ helm install frontend-app ./frontend-app
 C:\Users\HARSHIT.ARANYA> notepad $PROFILE
 C:\Users\HARSHIT.ARANYA> .$PROFILE
 HARSHIT.ARANYA>
+df -h
+resize2fs /dev/xvdf
+mountpoint /temp
+mount /dev/xvdf /temp
+umount /temp
