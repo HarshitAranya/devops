@@ -80,7 +80,11 @@ C:\Users\HARSHIT.ARANYA> notepad $PROFILE
 C:\Users\HARSHIT.ARANYA> .$PROFILE
 HARSHIT.ARANYA>
 df -h
-resize2fs /dev/xvdf
+resize2fs /dev/xvdf # commit the resize if updated
 mountpoint /temp
 mount /dev/xvdf /temp
 umount /temp
+file -s /dev/xvda1 # to check the file system
+growpart /dev/xvda 1 # update partition size
+resize2fs /dev/xvda1 # commit the size changes
+xfs_growfs # for xfs file system
