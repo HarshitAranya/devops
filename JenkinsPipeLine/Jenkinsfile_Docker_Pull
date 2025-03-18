@@ -34,7 +34,7 @@ pipeline {
         stage('Docker Pull') {
             steps {
                 echo 'Running Docker Push...'
-                sh 'docker pull harshitaranya/harshitrepo:backend:v1'
+                sh 'docker pull harshitaranya/harshitrepo:backend_v1'
                 sh 'docker pull harshitaranya/harshitrepo:frontend:v1'
                 sh 'docker pull harshitaranya/harshitrepo:database:v1'
             }
