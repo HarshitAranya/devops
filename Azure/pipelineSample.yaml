@@ -1,0 +1,148 @@
+✅ Each stage should have only one jobs: block
+✅ All jobs inside the stage must be listed under the same jobs: block
+✅ Each job has its own steps block
+
+# Example 1		  
+trigger:
+  - main  # Trigger pipeline on changes to the "main" branch
+
+pool:
+  vmImage: 'ubuntu-latest'  # Defines the agent (VM) to run jobs
+#OR  
+pool:
+  name: MyAgentPool  # Define once for all jobs in the pipeline
+#OR
+pool:
+  name: MyAgentPool
+  demands:
+    - Agent.Name -equals MySpecificAgent
+  
+stages:
+  - stage: Build
+    displayName: "Build Stage"
+    jobs:
+      - job: BuildJob
+        displayName: "Building Application"
+        steps:
+          - script: echo "Step 1: Running Build"
+          - script: echo "Step 2: Running Additional Build Tasks"
+      - job: AfterBuildJob
+        displayName: "After Building Application"
+        steps:
+          - script: echo "Step 1: Running Build"
+          - script: echo "Step 2: Running Additional Build Tasks"
+		  - task: PowerShell@2
+			inputs:
+			  targetType: 'filePath'   # Specify script file instead of inline script
+			  filePath: 'scripts/script.ps1'  # Path to your script file
+			  arguments: '-Parameter1 value1 -Parameter2 value2'  # Optional parameters
+			  workingDirectory: 'scripts'  # Optional, if the script needs a specific working directory
+			  failOnStderr: true  # Fails if errors are printed to stderr
+
+  - stage: Test
+    displayName: "Test Stage"
+    dependsOn: Build  # Ensures Test runs only after Build completes
+    jobs:
+      - job: TestJob
+        displayName: "Running Tests"
+        steps:
+          - script: echo "Step 1: Running Tests"
+          - script: echo "Step 2: Verifying Results"
+
+  - stage: Deploy
+    displayName: "Deploy Stage"
+    dependsOn: Test  # Ensures Deploy runs only after Test succeeds
+    condition: succeeded()  # Deploys only if the previous stage is successful
+    jobs:
+      - job: DeployJob
+        displayName: "Deploying Application"
+		pool:
+		  vmImage: 'ubuntu-latest'  # Defines the agent (VM) to run jobs
+        steps:
+          - script: echo "Step 1: Deploying to Production"
+          - script: echo "Step 2: Running Post-Deployment Tasks"
+
+trigger:
+  - main  # Trigger pipeline on changes to the "main" branch
+
+# Define the agent pool once for the entire pipeline
+pool:
+  name: MyAgentPool  # Use a self-hosted agent OR
+  # vmImage: 'ubuntu-latest'  # Uncomment if using a Microsoft-hosted agent
+
+stages:
+  - stage: Build
+    displayName: "Build Stage"
+    jobs:
+      - job: BuildJob
+        displayName: "Building Application"
+        steps:
+          - script: echo "Step 1: Running Build"
+          - script: echo "Step 2: Running Additional Build Tasks"
+
+      - job: AfterBuildJob
+        displayName: "After Building Application"
+        steps:
+          - script: echo "Step 1: Running After Build"
+          - script: echo "Step 2: Running Additional Tasks"
+          - task: PowerShell@2
+            inputs:
+              targetType: 'filePath'
+              filePath: 'scripts/script.ps1'
+              arguments: '-Parameter1 value1 -Parameter2 value2'
+              workingDirectory: 'scripts'
+              failOnStderr: true
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Host "Hello from PowerShell!"
+
+  - stage: Test
+    displayName: "Test Stage"
+    dependsOn: Build  # Ensures Test runs only after Build completes
+    jobs:
+      - job: TestJob
+        displayName: "Running Tests"
+        steps:
+          - script: echo "Step 1: Running Tests"
+          - script: echo "Step 2: Verifying Results"
+
+  - stage: Deploy
+    displayName: "Deploy Stage"
+    dependsOn: Test  # Ensures Deploy runs only after Test succeeds
+    condition: succeeded()  # Deploys only if the previous stage is successful
+    jobs:
+      - job: DeployJob
+        displayName: "Deploying Application"
+        pool:
+          name: 'myDeploymentAgent'  # ✅ Fixed indentation issue
+        steps:
+          - script: echo "Step 1: Deploying to Production"
+          - script: echo "Step 2: Running Post-Deployment Tasks"
+
+# Example 2
+		  
+jobs:
+  - job: ShowNetworkInfo
+    strategy:
+      matrix:
+        windows:
+          vmImage: 'windows-latest'
+        linux:
+          vmImage: 'ubuntu-latest'
+    pool:
+      vmImage: $(vmImage)  # Selects the OS-specific agent
+    steps:
+      - script: ipconfig
+        displayName: "Windows: Show IP Config"
+        condition: eq(variables['Agent.OS'], 'Windows_NT')  # Runs only on Windows
+
+      - script: whoami
+        displayName: "Show Current User"  # No condition needed, works on both Windows & Linux
+
+      - script: ifconfig
+        displayName: "Linux: Show IP Config"
+        condition: eq(variables['Agent.OS'], 'Linux')  # Runs only on Linux
+
+
