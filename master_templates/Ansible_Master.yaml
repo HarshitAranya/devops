@@ -1,0 +1,54 @@
+---
+- name: HTTPD server configuration
+  hosts: prod-web-servers
+  become: yes  # Ensures privilege escalation (sudo/root access)
+  vars_files:
+    - secrets.yaml
+    - name_vars.yaml
+  vars:
+    web_path: /var/www/html
+    user_name: webappuser  
+    web_volume: /var/lib/webvol
+
+  tasks:
+    - name: Install Apache on Fedora
+      dnf:
+        name: httpd
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+
+    - name: Install Apache on Ubuntu
+      apt:
+        name: apache2
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Start HTTPD/Apache2 service
+      service:
+        name: "{{ 'httpd' if ansible_facts['os_family'] == 'RedHat' else 'apache2' }}"
+        state: started
+
+    - name: Enable service on boot
+      service:
+        name: "{{ 'httpd' if ansible_facts['os_family'] == 'RedHat' else 'apache2' }}"
+        enabled: yes
+
+    - name: Ansible template example
+      template:
+        src: hello_world.j2
+        dest: /tmp/hello_world.txt
+      register: shell_result
+    - debug:
+      var: shell_result   
+
+    - name: Debug variable from secrets.yaml
+      debug:
+        msg: "Secret value is {{ secret_var }}"  # Example usage of a variable from secrets.yaml
+
+    - name: Debug variable from name_vars.yaml
+      debug:
+        msg: "Name variable is {{ name_var }}"         
+   
+# ansible-playbook -i inventory.ini ping.yml -u root #You can override the user
+
+     

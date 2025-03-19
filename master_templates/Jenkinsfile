@@ -1,0 +1,77 @@
+pipeline{
+
+    agent{ label 'prog-agent' }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
+    environment {
+        username= ''
+        password=''
+        datapath=''
+    }
+
+    stages{
+        stage('checkout'){
+            steps{
+                // git branch: 'master', url: 'https://github.com/user/repo.git'
+                echo 'checkout git repo'
+            }
+        }
+        stage('build'){
+            steps{
+                // sh 'mvn clean package'
+                echo 'building the packages'
+            }
+        }
+        stage('test'){
+            steps{
+                // sh 'mvn test'
+                echo 'testing the build app'
+            }
+        }
+        stage('approve'){
+            steps{
+                script {
+                    def userInput = input message: 'Proceed with deployment?',
+                        ok: 'Yes',
+                        parameters:[]
+                    echo "Deployment approved, Processing..."    
+                }
+            }
+        }
+        stage('deploy'){
+            steps{
+                // sh 'deploy.sh'
+                echo 'deployment is in progress...'
+            }
+        }
+        stage('rollback'){
+            when{
+                failure()
+                // script {
+                //     def status = sh(script: "kubectl rollout status deployment my-app", returnStatus: true)
+                //     if (status != 0) {
+                //         error("Deployment failed, triggering rollback...")
+                //     }
+                // }
+                // script {
+                //     def status = sh(script: "curl -s -o /dev/null -w '%{http_code}' http://localhost", returnStdout: true).trim()
+                //     if (status != '200') {
+                //         error("Deployment failed, triggering rollback...")
+                //     }
+                // }
+            }
+            steps{
+                // sh 'git reset --hard HEAD~1'
+                // sh 'kubectl rollout undo deployment mywebapp'
+                // sh 'rollback.sh'
+                // sh "docker stop my-app && docker rm my-app"
+                // sh "docker run -d --name my-app -p 80:80 ${IMAGE_NAME}:previous-version" // Use the last stable image tag
+                echo 'Deployment failed. Rolling back to last success'
+            }
+        }                        
+    }
+
+}
