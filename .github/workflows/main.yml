@@ -1,16 +1,9 @@
 name: Deploy EC2 Instance
 
 on:
-  workflow_dispatch:
-
-# on:
-#   schedule:
-#     - cron: '0 0 * * 1'  # Runs every Monday at midnight
-    
-# on:
-#   push:
-#     branches:
-#       - myCodes_Stop
+  push:
+    branches:
+      - myCodes
 
 jobs:
   deploy:
@@ -25,14 +18,14 @@ jobs:
       with:
         terraform_version: 1.10.0 # Replace with the required Terraform version
 
-    # - name: Configure AWS credentials
-    #   env:
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #   run: |
-    #     echo "[default]" > ~/.aws/credentials
-    #     echo "aws_access_key_id = $AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-    #     echo "aws_secret_access_key = $AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+    - name: Configure AWS credentials
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: |
+        echo "[default]" > ~/.aws/credentials
+        echo "aws_access_key_id = $AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+        echo "aws_secret_access_key = $AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
 
     - name: Terraform Init
       working-directory: terraform
@@ -42,13 +35,18 @@ jobs:
       working-directory: terraform
       run: terraform plan -out=tfplan
 
-    # - name: Terraform Apply
-    #   run: terraform apply -input=false tfplan
+    - name: Terraform Apply
+      working-directory: terraform
+      run: terraform apply -input=false -state=aws_ec2.tfstate tfplan
 
-    # - name: Commit and Push Terraform State
-    #   run: |
-    #     git config user.name "github-actions"
-    #     git config user.email "actions@github.com"
-    #     git add terraform.tfstate
-    #     git commit -m "Update Terraform state"
-    #     git push origin main
+    - name: Commit and Push Terraform State
+      run: |
+        git config user.name "harshit aranya"
+        git config user.email "harshit.aranya@gmail.com"
+        git add aws_ec2.tfstate
+        git commit -m "Update Terraform state"
+        git push origin myCode
+
+    # - name: Terraform Destroy
+    #     working-directory: terraform
+    #     run: terraform destroy -auto-approve -state=aws_ec2.tfstate    
