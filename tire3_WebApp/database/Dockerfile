@@ -11,7 +11,7 @@ EXPOSE 5432
 
 # Set environment variables
 # ENV POSTGRES_USER=postgres
-# ENV POSTGRES_PASSWORD=root@123
+# ENV POSTGRES_PASSWORD=password
 # ENV POSTGRES_DB=simpledb
 
 
