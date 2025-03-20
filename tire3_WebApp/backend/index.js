@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // const db = new Client({
 //     host: 'localhost',
 //     user: 'postgres',
-//     password: 'root@123',
+//     password: 'password',
 //     database: 'simpledb',
 //     port: 5432, // port should be a number
 // });
