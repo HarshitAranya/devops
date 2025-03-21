@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: database-web-app
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: database-web-app
@@ -14,14 +14,32 @@ spec:
     spec:
       containers:
       - name: database-web-app-container
-        image: harshitaranya/harshit/database-my-web-app:latest
+        image: harshitaranya/harshit:databaseserver-d1
         ports:
         - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: database-web-app-secret
+              key: DB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: database-web-app-secret
+              key: DB_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: database-web-app-config
+              key: DB_NAME
+        - name: POSTGRES_HOST_AUTH_METHOD
+          value: "scram-sha-256"  # More secure than 'trust'
         volumeMounts:
         - name: config-volume
-          mountPath: /etc/config  # Mount the ConfigMap
+          mountPath: /etc/config  # Mount ConfigMap
         - name: secret-volume
-          mountPath: /etc/secrets  # Mount the Secret (DB_PASSWORD will be available here)
+          mountPath: /etc/secrets  # Mount Secret (optional)
       volumes:
       - name: config-volume
         configMap:
@@ -29,16 +47,3 @@ spec:
       - name: secret-volume
         secret:
           secretName: database-web-app-secret  # Secret for sensitive data
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: database-web-app-service
-spec:
-  selector:
-    app: database-web-app
-  ports:
-  - protocol: TCP
-    port: 4432
-    targetPort: 5432
-  type: ClusterIP
