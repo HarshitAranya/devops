@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: backend-web-app-config
 data:
-  DB_HOST: "localhost"  # Replace with actual database host if needed
+  DB_HOST: "database-web-app-service"  # Replace with actual database host if needed
   DB_PORT: "5432"       # Replace with actual database port
   DB_NAME: "mydatabase" # Replace with actual database name
   DB_USER: "dbuser"     # Replace with actual database user

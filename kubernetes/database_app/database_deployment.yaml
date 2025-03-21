@@ -47,3 +47,17 @@ spec:
       - name: secret-volume
         secret:
           secretName: database-web-app-secret  # Secret for sensitive data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-web-app-service
+spec:
+  selector:
+    app: database-web-app
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
+  type: ClusterIP

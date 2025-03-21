@@ -68,6 +68,8 @@ DB_PASSWORD=$(cat /etc/secrets/DB_PASSWORD)
 kubectl apply -f database/config.yaml
 kubectl apply -f database/secrets.yaml
 kubectl apply -f database/deployment-service.yaml
+kubectl exec -it database-web-app-7487cfcc9f-24ptz -n default -- sh
+psql -h database-web-app-7487cfcc9f-nfc2n -p 5432 -U dbuser -d mydatabase
 
 kubectl apply -f backend/config.yaml
 kubectl apply -f backend/secrets.yaml
