@@ -6,7 +6,8 @@ FROM node:16-alpine AS installer
 WORKDIR /app
 
 # Copy package.json files and install dependencies
-COPY ./backend/package*.json ./
+# COPY ./backend/package*.json ./
+COPY package*.json ./
 RUN npm install --production
 
 # Stage 2: Deploy the application
@@ -23,7 +24,8 @@ WORKDIR /usr/src/app
 COPY --from=installer /app/node_modules ./node_modules
 
 # Copy the application code
-COPY ./backend/index.js ./
+COPY index.js ./
+# COPY ./backend/index.js ./
 
 # Expose port
 EXPOSE 3001

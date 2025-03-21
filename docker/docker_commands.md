@@ -1,5 +1,14 @@
 # Final code for dockerfile
-=================================================================================================
+========================================================================================
+# Docker tag to push it on docker repo
+if docker built -t databse:d1 .
+the image name will be databse and tag name will be d1
+then tag will be as follow where harshitaranya/harshit is docker repo
+docker tag database:d1 harshitaranya/harshit:database-latest
+docker tag databaseserver:d1 harshitaranya/harshit:databaseserver-d1
+docker push harshitaranya/harshit:databaseserver-d1
+docker pull harshitaranya/harshit:databaseserver-d1
+=========
 # Networking
 docker network create --driver bridge app_network
 docker network ls
@@ -53,7 +62,7 @@ psql -h localhost -p 4432 -U postgres -d simpledb
 # Backend container creation and deployment
 cd /home/harshit/devops/tire3_WebApp/backend/
 docker build -t backendserver:d1 .
-
+docker tag backendserver:d1 harshitaranya/harshit:backendserver-d1
 rm -f /home/harshit/devops/tire3_WebApp/backend/.env
 touch /home/harshit/devops/tire3_WebApp/backend/.env
 

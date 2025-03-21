@@ -1,8 +1,10 @@
 # Stage 1: Install dependencies
-FROM nginx:alpine AS installer
+# FROM nginx:alpine AS installer
+FROM node:alpine AS installer
 WORKDIR /myapp
 # Copy package.json and install dependencies
-COPY ./package*.json ./
+# COPY ./package*.json ./
+COPY package*.json ./
 RUN npm install
 # Not required for Angular 12+
 # RUN npx ngcc -properties es2023 browser module main --first-only --create-ivy-entry-points

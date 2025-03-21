@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: database-web-app-container
-        image: <your-dockerhub-username>/database-my-web-app:latest
+        image: harshitaranya/harshit/database-my-web-app:latest
         ports:
         - containerPort: 5432
         volumeMounts:
