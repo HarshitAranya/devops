@@ -50,6 +50,7 @@ kubectl config current-context
 minikube status
 minikube profile list
 minikube start --profile=minikube --driver=vmware
+minikube tunnel
 
 kubectl get po -A
 
@@ -82,6 +83,10 @@ kubectl apply -f database/secrets.yaml
 kubectl apply -f database/deployment-service.yaml
 kubectl exec -it database-web-app-7487cfcc9f-24ptz -n default -- sh
 psql -h database-web-app-7487cfcc9f-nfc2n -p 5432 -U dbuser -d mydatabase
+PGPASSWORD=securepassword psql -h database-web-app-service -p 5432 -U dbuser -d mydatabase
+
+nc -zv database-web-app-service 5432
+curl http://database-web-app-service:5432
 
 kubectl apply -f backend/config.yaml
 kubectl apply -f backend/secrets.yaml
@@ -134,3 +139,7 @@ crictl logs -f containerid
 cd /etc/kubernetes/manifests/
 crictl pull nginx
 crictl runp pod-config.json
+
+# to access minikube app on localhost:8080
+kubectl port-forward service/frontend-web-app-service 8080:80
+kubectl exec -it frontend-web-app-7476698f9d-h72h9 -- curl http://backend-web-app-service:4001

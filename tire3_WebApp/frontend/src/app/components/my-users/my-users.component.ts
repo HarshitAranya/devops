@@ -20,6 +20,8 @@ export class MyUsersComponent {
     userList: MyUser [] = [];
     nameOfthis(){
       // debugger;
+      // http://backend-web-app-service:4001/user   in case of cluster
+      // http://backendapp:4001/user  in case of docker
       this.http.get<{ message: string, data: MyUser[] }>("http://backendapp:4001/user").subscribe((userResult)=>{
         // debugger;
         this.userList = userResult.data;
