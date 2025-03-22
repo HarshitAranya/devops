@@ -68,6 +68,8 @@ kubectl get all -n t3webapp
 kubectl config view
 kubectl config view | findstr namespace
 kubectl config set-context --current --namespace=t3webapp
+kubectl delete all --all -n t3webapp
+
 
 echo -n 'securepassword' | base64
 echo -n 'dbuser' | base64
