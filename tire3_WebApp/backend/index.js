@@ -48,23 +48,24 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const fs = require('fs');
 let password, username;
 try {
-    // Read the secrets from the files for docker
-    password = fs.readFileSync('/run/secrets/dockersecretpassword', 'utf8').trim();
-    username = fs.readFileSync('/run/secrets/dockersecretusername', 'utf8').trim();
+    // localhost = process.env.LOCALHOST || 'localhost';
+    // Read the secrets from the secret.yaml in kubernets
+    password = process.env.DB_PASSWORD || 'Dummy_Password';
+    username = process.env.DB_USER || 'Dummy_User';
     // localhost = process.env.LOCALHOST || 'localhost';
 } catch (err) {
     console.error('Error reading secret file:', err.message);
     // Fallback to environment variables if needed
-    password = process.env.PASSWORD || 'Dummy_Password';
-    username = process.env.USERNAME || 'Dummy_User';
-    // localhost = process.env.LOCALHOST || 'localhost';
+    // Read the secrets from the files for docker
+    password = fs.readFileSync('/run/secrets/dockersecretpassword', 'utf8').trim();
+    username = fs.readFileSync('/run/secrets/dockersecretusername', 'utf8').trim();
 }
 
 const db = new Client({
-    host: process.env.HOST || 'localhost',
+    host: process.env.DB_HOST || 'localhost',
     user: username,
     password: password,
-    database: process.env.DATABASE || 'simpledb',
+    database: process.env.DB_NAME || 'simpledb',
     port: process.env.DB_PORT || 5432,
 });
 
