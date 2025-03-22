@@ -48,7 +48,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const fs = require('fs');
 let password, username;
 try {
-    // Read the secrets from the files
+    // Read the secrets from the files for docker
     password = fs.readFileSync('/run/secrets/dockersecretpassword', 'utf8').trim();
     username = fs.readFileSync('/run/secrets/dockersecretusername', 'utf8').trim();
     // localhost = process.env.LOCALHOST || 'localhost';
