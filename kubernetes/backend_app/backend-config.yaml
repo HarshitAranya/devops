@@ -6,7 +6,7 @@ data:
   DB_HOST: "database-web-app-service"  # Replace with actual database host if needed
   DB_PORT: "5432"       # Replace with actual database port
   DB_NAME: "mydatabase" # Replace with actual database name
-  DB_USER: "dbuser"     # Replace with actual database user
-  DB_PASSWORD: "securepassword" # Replace with actual database password
+  TPORT: "3001"
+  APIHOST: "backend-web-app-service"
 
 #kubectl apply -f backend-config.yaml
