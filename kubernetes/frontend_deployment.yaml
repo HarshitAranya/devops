@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend-web-app-container
-        image: <your-dockerhub-username>/frontend-my-web-app:latest
+        image: harshitaranya/harshit:frontendserver-d1
         ports:
         - containerPort: 80
 ---
