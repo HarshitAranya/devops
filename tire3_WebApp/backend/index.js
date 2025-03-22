@@ -7,6 +7,8 @@ const { Client } = require('pg');
 // const port = 3001;
 const port = process.env.TPORT || 3001;
 const apihost = process.env.APIHOST || '192.168.150.128';
+const password = process.env.DB_PASSWORD;
+const username = process.env.DB_USER || 'Dummy_User';
 const app = express();
 
 // app.use(cors());
@@ -45,21 +47,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //     // Fallback to environment variable or default value
 //     password = process.env.PASSWORD || 'Dummy_Password';
 // }
-const fs = require('fs');
-let password, username;
-try {
-    // localhost = process.env.LOCALHOST || 'localhost';
-    // Read the secrets from the secret.yaml in kubernets
-    password = process.env.DB_PASSWORD || 'Dummy_Password';
-    username = process.env.DB_USER || 'Dummy_User';
-    // localhost = process.env.LOCALHOST || 'localhost';
-} catch (err) {
-    console.error('Error reading secret file:', err.message);
-    // Fallback to environment variables if needed
-    // Read the secrets from the files for docker
-    password = fs.readFileSync('/run/secrets/dockersecretpassword', 'utf8').trim();
-    username = fs.readFileSync('/run/secrets/dockersecretusername', 'utf8').trim();
-}
+// const fs = require('fs');
+
+// let password, username;
+// try {
+//     // localhost = process.env.LOCALHOST || 'localhost';
+//     // Read the secrets from the secret.yaml in kubernets
+//     password = process.env.DB_PASSWORD || 'Dummy_Password';
+//     username = process.env.DB_USER || 'Dummy_User';
+//     // localhost = process.env.LOCALHOST || 'localhost';
+// } catch (err) {
+//     console.error('Error reading secret file:', err.message);
+//     // Fallback to environment variables if needed
+//     // Read the secrets from the files for docker
+//     password = fs.readFileSync('/run/secrets/dockersecretpassword', 'utf8').trim();
+//     username = fs.readFileSync('/run/secrets/dockersecretusername', 'utf8').trim();
+// }
 
 const db = new Client({
     host: process.env.DB_HOST || 'localhost',

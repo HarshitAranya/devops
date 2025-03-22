@@ -10,3 +10,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80  # Matching the containerPort
+
+#kubectl port-forward svc/my-loadbalancer 8080:80 (for testing http://localhost:8080)

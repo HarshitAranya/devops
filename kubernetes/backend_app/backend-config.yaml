@@ -8,5 +8,4 @@ data:
   DB_NAME: "mydatabase" # Replace with actual database name
   TPORT: "3001"
   APIHOST: "backend-web-app-service"
-
 #kubectl apply -f backend-config.yaml

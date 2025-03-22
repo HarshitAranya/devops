@@ -41,23 +41,33 @@ minikube start --driver=hyperv --memory 3048
 minikube start --driver=hyperv --memory 3048 --insecure-registry
 minikube start --driver=hyperv --memory 3048 --image-repository="docker.io"
 
-
 minikube start --driver vmware
-
 minikube delete --profile=minikube
 minikube start --profile=minikube
-
 minikube delete --profile=minikube
-minikube start --profile=minikube --driver=vmware
 
-minikube profile list
+kubectl config current-context
 minikube status
+minikube profile list
+minikube start --profile=minikube --driver=vmware
 
 kubectl get po -A
 
 
 # Kubernetes commands
 kubectl cluster-info
+kubectl config get-clusters 
+kubectl get all -A
+kubectl version
+kubectl version -short
+kubectl version -client
+
+kubectl get namespaces
+kubectl create namespaces t3webapp
+kubectl get all -n t3webapp
+kubectl config view
+kubectl config view | findstr namespace
+kubectl config set-context --current --namespace=t3webapp
 
 echo -n 'securepassword' | base64
 echo -n 'dbuser' | base64
