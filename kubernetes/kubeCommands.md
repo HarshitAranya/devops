@@ -78,19 +78,40 @@ echo -n 'dbuser' | base64
 DB_USER=$(cat /etc/secrets/DB_USER)
 DB_PASSWORD=$(cat /etc/secrets/DB_PASSWORD)
 
-kubectl apply -f database/config.yaml
-kubectl apply -f database/secrets.yaml
-kubectl apply -f database/deployment-service.yaml
-kubectl exec -it database-web-app-7487cfcc9f-24ptz -n default -- sh
-psql -h database-web-app-7487cfcc9f-nfc2n -p 5432 -U dbuser -d mydatabase
-PGPASSWORD=securepassword psql -h database-web-app-service -p 5432 -U dbuser -d mydatabase
+# Cluster deployment
+kubectl apply -f cluster_app/loadbalancer-service.yaml
+# Database deployment
+kubectl apply -f .\database_app\database-secrets.yaml
+kubectl apply -f .\database_app\database-config.yaml
+kubectl apply -f .\database_app\database_deployment.yaml
+
+kubectl exec -it database-web-app-7487cfcc9f-wnhf4 -n default -- sh
+psql -h database-web-app-7487cfcc9f-wnhf4 -p 5432 -U dbuser -d mydatabase
+
+PGPASSWORD=securepassword 
+psql -h database-web-app-service -p 5432 -U dbuser -d mydatabase
 
 nc -zv database-web-app-service 5432
 curl http://database-web-app-service:5432
+# Backend deployment
+kubectl apply -f .\backend_app\backend-secrets.yaml
+kubectl apply -f .\backend_app\backend-config.yaml
+kubectl apply -f .\backend_app\backend_deployment.yaml
 
 kubectl apply -f backend/config.yaml
 kubectl apply -f backend/secrets.yaml
 kubectl apply -f backend/deployment-service.yaml
+# Frontend deployment
+kubectl apply -f .\frontend_app\frontend_deployment.yaml
+
+# Run as administrator
+minikube tunnel
+
+# Then use EXTERNAL-IP provided by following command to access web server
+kubectl get svc my-loadbalancer
+
+# Shutdown system
+minikube stop
 
 kubectl apply -f frontend/config.yaml
 kubectl apply -f frontend/secrets.yaml

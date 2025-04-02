@@ -1,13 +1,23 @@
 # Final code for dockerfile
+Start-Process -FilePath "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+# Database
+docker build -t databaseserver:d1 .
+docker tag databaseserver:d1 harshitaranya/harshit:databaseserver-d1
+docker push harshitaranya/harshit:databaseserver-d1
+docker pull harshitaranya/harshit:databaseserver-d1
+# Backend
+docker build -t backendserver:d1 .
+docker tag backendserver:d1 harshitaranya/harshit:backendserver-d1
+# Frontend
+docker build -t frontendserver:d1 .
+docker tag frontendserver:d1 harshitaranya/harshit:frontendserver-d1
 ========================================================================================
 # Docker tag to push it on docker repo
 if docker built -t databse:d1 .
 the image name will be databse and tag name will be d1
 then tag will be as follow where harshitaranya/harshit is docker repo
 docker tag database:d1 harshitaranya/harshit:database-latest
-docker tag databaseserver:d1 harshitaranya/harshit:databaseserver-d1
-docker push harshitaranya/harshit:databaseserver-d1
-docker pull harshitaranya/harshit:databaseserver-d1
+
 =========
 # Networking
 docker network create --driver bridge app_network
@@ -94,8 +104,6 @@ curl http://localhost:4001
 =================================================================================================
 # Frontend container creation and deployment
 cd /home/harshit/devops/tire3_WebApp/frontend/
-
-docker build -t frontendserver:d1 .
 
 docker run -d \
   --name frontendapp \
