@@ -32,6 +32,12 @@ export const routes: Routes = [
                 path: 'my-users',
                 component: MyUsersComponent
             },
+            { 
+                path: '',
+                redirectTo: '/my-users',
+                pathMatch: 'full'
+
+            },
             {
                 path: 'post-api',
                 component: PostApiComponent
