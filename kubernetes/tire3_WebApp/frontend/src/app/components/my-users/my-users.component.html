@@ -1,0 +1,31 @@
+<p>my-users works!</p>
+
+<p>get-api works!</p>
+
+<app-alert [message]="alertMsg" [alertType]="'Success'" ></app-alert>
+
+<div class="row">
+    <div class="col-2">
+        <!-- <button class="btn btn-success" (click)="nameOfthis()">Get Users</button> -->
+    </div>
+    <div class="row">
+        <table>
+            <tr>
+                <th>Sr No</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+            </tr>
+            @for (student of userList; track $index) {
+                <tr >
+                    <td>{{$index+1}}</td>
+                    <td>{{student.fullname}}</td>
+                    <td>{{student.email}}</td>
+                    <td>{{student.mobile}}</td>
+                </tr>
+            }
+        </table>
+    </div>
+
+</div>
+

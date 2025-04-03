@@ -1,18 +1,10 @@
 # Final code for dockerfile
 Start-Process -FilePath "C:\Program Files\Docker\Docker\Docker Desktop.exe"
 # Database
-cd D:\devops\docker\Docker_tire3_WebApp\database
-docker build -t databasedocker:v1 .
-docker tag databasedocker:v1 harshitaranya/harshit:databasedocker-v1
-docker push harshitaranya/harshit:databasedocker-v1
-docker pull harshitaranya/harshit:databasedocker-v1
-
-docker run -d \
-  --name databaseapp \
-  --env-file .env \
-  -p 5432:5432 \
-  databasedocker:v1
-
+docker build -t databaseserver:d1 .
+docker tag databaseserver:d1 harshitaranya/harshit:databaseserver-d1
+docker push harshitaranya/harshit:databaseserver-d1
+docker pull harshitaranya/harshit:databaseserver-d1
 # Backend
 docker build -t backendserver:d1 .
 docker tag backendserver:d1 harshitaranya/harshit:backendserver-d1
@@ -50,7 +42,7 @@ docker volume create db_volume
 cd /home/harshit/devops/tire3_WebApp/database/
 cp -r ./init/*.sql /var/lib/docker/volumes/db_volume/_data/
 
-docker build -t databasedocker:v1 .
+docker build -t databaseserver:d1 .
 
 rm -f /home/harshit/devops/tire3_WebApp/database/.env
 touch /home/harshit/devops/tire3_WebApp/database/.env
@@ -71,7 +63,7 @@ docker run -d \
   -v db_volume:/docker-entrypoint-initdb.d/ \
   -p $dhport:$dtport \
   --network app_net \
-  databasedocker:v1
+  databaseserver:d1
 rm -f /home/harshit/devops/tire3_WebApp/database/.env
 
 docker exec -it databaseapp psql -U postgres -d simpledb -c "SELECT * FROM myuser;"
@@ -165,7 +157,7 @@ docker run -d \
   -p 4432:5432 \
   --network app_net \
   postgres 
-docker run -d --name mydbapp -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root@123 -e POSTGRES_DB=simpledb -p 5432:5432 harshitaranya/harshit:databasedocker-v1
+docker run -d --name mydbapp -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root@123 -e POSTGRES_DB=simpledb -p 5432:5432 harshitaranya/harshit:databaseserver-d1
 psql -h localhost -p 5432 -U postgres -d simpledb
 docker exec -it mydbapp psql -U postgres -d simpledb -c "SELECT * FROM myuser;"
 
