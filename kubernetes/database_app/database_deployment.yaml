@@ -15,6 +15,7 @@ spec:
       containers:
       - name: database-web-app-container
         image: harshitaranya/harshit:databaseserver-d1
+        imagePullPolicy: IfNotPresent #IfNotPresent #Always
         ports:
         - containerPort: 5432
         env:

@@ -81,12 +81,14 @@ DB_PASSWORD=$(cat /etc/secrets/DB_PASSWORD)
 # Cluster deployment
 kubectl apply -f cluster_app/loadbalancer-service.yaml
 # Database deployment
+echo -n "postgres" | base64
+
 kubectl apply -f .\database_app\database-secrets.yaml
 kubectl apply -f .\database_app\database-config.yaml
 kubectl apply -f .\database_app\database_deployment.yaml
 
 kubectl exec -it database-web-app-7487cfcc9f-wnhf4 -n default -- sh
-psql -h database-web-app-7487cfcc9f-wnhf4 -p 5432 -U dbuser -d mydatabase
+psql -h database-web-app-7487cfcc9f-cfn7g -p 5432 -U dbuser -d mydatabase
 
 PGPASSWORD=securepassword 
 psql -h database-web-app-service -p 5432 -U dbuser -d mydatabase

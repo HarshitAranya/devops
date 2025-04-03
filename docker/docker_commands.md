@@ -157,9 +157,9 @@ docker run -d \
   -p 4432:5432 \
   --network app_net \
   postgres 
-
-psql -h localhost -p 4432 -U postgres -d simpledb
-docker exec -it mydb psql -U postgres -d simpledb -c "SELECT * FROM myuser;"
+docker run -d --name mydbapp -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root@123 -e POSTGRES_DB=simpledb -p 5432:5432 harshitaranya/harshit:databaseserver-d1
+psql -h localhost -p 5432 -U postgres -d simpledb
+docker exec -it mydbapp psql -U postgres -d simpledb -c "SELECT * FROM myuser;"
 
 xxd 01-create-schema-fixed.sql
 file -i 03-insert-data.sql
@@ -172,6 +172,7 @@ apt install postgresql-client
 psql -h hostname -p 4432 -U postgres -d simpledb
 psql -h localhost -p 4432 -U postgres -d simpledb
 \l
+\c simpledb
 \dt
 SELECT * FROM "myuser";
 \q
@@ -265,6 +266,9 @@ docker run -it \
 cd /app && npm install --production
 apk update
 apk add postgresql-client
+psql -h database-web-app-service -p 5432 -U dbuser -d mydatabase
+SELECT * FROM myuser;
+http://${apihost}:${port}
 exit
 
 docker commit mybackend mybackend-configured

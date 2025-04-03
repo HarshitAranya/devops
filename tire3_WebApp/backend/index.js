@@ -81,7 +81,7 @@ db.connect(err=>{
 
 // get all data 
 app.get('/user',(req,res)=>{
-    let qr = 'select * FROM myuser;';
+    let qr = 'SELECT * FROM "myuser";';
     db.query(qr,(err,result)=>{
         if (err) {
             console.error('Error executing query:', err);

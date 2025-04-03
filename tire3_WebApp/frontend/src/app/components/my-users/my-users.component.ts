@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { MyUser } from '../../model/interface/IUser';
 import { AlertComponent } from '../reusableComponent/alert/alert.component';
 
-
 @Component({
   selector: 'app-my-users',
   standalone: true,
@@ -12,22 +11,26 @@ import { AlertComponent } from '../reusableComponent/alert/alert.component';
   styleUrl: './my-users.component.css'
 })
 export class MyUsersComponent {
+  
+  userList: MyUser[] = []; // Ensure this is initialized
 
-  constructor(private http: HttpClient){
-    this.nameOfthis(); // this should be there in this class
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.loadUsers();
   }
 
-    userList: MyUser [] = [];
-    nameOfthis(){
-      // debugger;
-      // http://backend-web-app-service:4001/user   in case of cluster
-      // http://backendapp:4001/user  in case of docker
-      this.http.get<{ message: string, data: MyUser[] }>("http://backendapp:4001/user").subscribe((userResult)=>{
-        // debugger;
-        this.userList = userResult.data;
-      })
-    }
-
-    alertMsg: string = 'Before: This is from GET TS';
-
+  loadUsers() {
+    this.http.get<{ message: string, data: MyUser[] }>("/my-users")
+      .subscribe(
+        (userResult) => {
+          console.log("API Response:", userResult); // Debugging API response
+          this.userList = userResult.data; // Bind data to UI
+        },
+        (error) => {
+          console.error("API Error:", error);
+        }
+      );
+  }
+  alertMsg: string = 'Before: This is from GET TS';
 }

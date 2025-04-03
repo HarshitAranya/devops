@@ -26,6 +26,9 @@ COPY --from=installer /app/node_modules ./node_modules
 # Copy the application code
 COPY index.js ./
 # COPY ./backend/index.js ./
+RUN apk update
+RUN apk add postgresql-client
+RUN apk add --no-cache curl
 
 # Expose port
 EXPOSE 3001

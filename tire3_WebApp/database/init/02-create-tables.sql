@@ -15,7 +15,8 @@ CREATE TABLE public.myuser (
     mobile character varying(11)
 );
 
-ALTER TABLE public.myuser OWNER TO postgres;
+-- ALTER TABLE public.myuser OWNER TO postgres;
+ALTER TABLE public.myuser OWNER TO dbuser;
 
 -- Name: myuser_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
