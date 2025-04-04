@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { MyUser } from '../../model/interface/IUser';
 import { AlertComponent } from '../reusableComponent/alert/alert.component';
 
-
 @Component({
   selector: 'app-my-users',
   standalone: true,
@@ -19,18 +18,11 @@ export class MyUsersComponent {
 
     userList: MyUser [] = [];
     nameOfthis(){
-      // debugger;
-      // http://backend-web-app-service:4001/user   in case of cluster
-      // http://backendapp:4001/user  in case of docker
-      // this.http.get<{ message: string, data: MyUser[] }>("/my-users")
-      // this.http.get<{ message: string, data: MyUser[] }>("http://backend-web-app-service:4001/user")
-
-      this.http.get<{ message: string, data: MyUser[] }>("http://backendapp:4001/user").subscribe((userResult)=>{
+      this.http.get<{ message: string, data: MyUser[] }>("http://192.168.100.102:3001/user").subscribe((userResult)=>{
         // debugger;
         this.userList = userResult.data;
       })
     }
 
     alertMsg: string = 'Before: This is from GET TS';
-
 }

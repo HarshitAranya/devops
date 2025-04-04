@@ -25,3 +25,7 @@ EXPOSE 80
 
 # Command to start Nginx
 CMD ["nginx", "-g", "daemon off;"]
+
+# 192.168.100.101 DB
+# 192.168.100.102 BE
+# 192.168.100.103 FE

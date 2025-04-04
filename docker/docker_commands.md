@@ -1,5 +1,22 @@
 # Final code for dockerfile
 Start-Process -FilePath "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+
+# Before start 
+docker network create \
+  --subnet=192.168.100.0/24 \
+  --gateway=192.168.100.1 \
+  custom-bridge
+
+docker run -d \
+  --name my-container \
+  --net custom-bridge \
+  --ip 192.168.100.100 \
+  my-image
+  
+# 192.168.100.101 DB
+# 192.168.100.102 BE
+# 192.168.100.103 FE
+
 # Database
 cd D:\devops\docker\Docker_tire3_WebApp\database
 docker build -t databasedocker:v1 .
@@ -11,8 +28,32 @@ docker run -d \
   --name databaseapp \
   --env-file .env \
   -p 5432:5432 \
+  --hostname databaseapp \
   databasedocker:v1
 
+docker run -d --name databaseapp --env-file .env -p 5432:5432 --hostname databaseapp databasedocker:v1
+
+docker exec -it databaseapp sh
+hostname
+psql -h databaseapp -p 5432 -U dbuser -d mydatabase
+\dt
+SELECT * FROM "myuser";
+
+From Host or outside network use localhost:5432 or local host IP:5432
+Like this -
+$env:PGPASSWORD = "securepassword"
+psql -h localhost -p 5432 -U dbuser -d mydatabase
+ipconfig | findstr "IPv4"
+ping $(hostname) -n 1 -l 0 -4 | findstr "Reply from"
+psql -h 172.28.176.1 -p 5432 -U dbuser -d mydatabase
+
+If you dont want to expose, dont use port use network instead of
+
+docker network create \
+  --driver bridge \
+  --subnet=192.168.100.0/24 \
+  --gateway=192.168.100.1 \
+  app_net
 # Backend
 docker build -t backendserver:d1 .
 docker tag backendserver:d1 harshitaranya/harshit:backendserver-d1
@@ -276,7 +317,6 @@ apk update
 apk add postgresql-client
 psql -h database-web-app-service -p 5432 -U dbuser -d mydatabase
 SELECT * FROM myuser;
-http://${apihost}:${port}
 exit
 
 docker commit mybackend mybackend-configured

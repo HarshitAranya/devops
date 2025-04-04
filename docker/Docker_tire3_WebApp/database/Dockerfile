@@ -4,9 +4,10 @@ WORKDIR /tempdata
 # Copy .sql files to the Postgres init directory
 COPY commands.txt .
 COPY ./init/*.sql /docker-entrypoint-initdb.d/
-RUN apk update
-RUN apk add --no-cache curl
-EXPOSE 5432
+RUN apt-get update && apt-get install -y curl
+# Remove EXPOSE if you dont want to expose it 
+# EXPOSE 5432
+
 
 
 

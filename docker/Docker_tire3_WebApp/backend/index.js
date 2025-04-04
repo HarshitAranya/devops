@@ -5,8 +5,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Client } = require('pg');
 // const port = 3001;
-const port = process.env.TPORT || 3001;
-const apihost = process.env.APIHOST || '192.168.150.128';
+const port = process.env.TPORT || 3001; // for backend API only to create API URL like http://backend:3001/user
+const apihost = process.env.APIHOST || 'localhost' //'192.168.150.128'; // ip address or host name of backend container
 const password = process.env.DB_PASSWORD;
 const username = process.env.DB_USER || 'Dummy_User';
 const app = express();
@@ -18,11 +18,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = new Client({
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST || 'databaseserver',
     user: username,
     password: password,
     database: process.env.DB_NAME || 'simpledb',
-    port: process.env.DB_PORT || 5432,
+    // If not exposed
+    // port: process.env.DB_PORT || 5432, 
 });
 
 // check database connection
