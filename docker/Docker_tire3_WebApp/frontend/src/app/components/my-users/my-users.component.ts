@@ -18,7 +18,7 @@ export class MyUsersComponent {
 
     userList: MyUser [] = [];
     nameOfthis(){
-      this.http.get<{ message: string, data: MyUser[] }>("http://192.168.100.102:3001/user").subscribe((userResult)=>{
+      this.http.get<{ message: string, data: MyUser[] }>("http://localhost:3001/user").subscribe((userResult)=>{
         // debugger;
         this.userList = userResult.data;
       })

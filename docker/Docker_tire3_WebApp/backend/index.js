@@ -10,8 +10,26 @@ const apihost = process.env.APIHOST || 'localhost' //'192.168.150.128'; // ip ad
 const password = process.env.DB_PASSWORD;
 const username = process.env.DB_USER || 'Dummy_User';
 const app = express();
+//new code start
+const allowedOrigins = [
+    `http://${apihost}`,  // Dynamic API host
+    'http://192.168.100.102',
+    'http://172.28.176.1',
+    'http://172.28.176.1:3001/user',
+    'http://localhost:4200'
+  ];
 
-app.use(cors({ origin: `http://${apihost}` })); // Allow requests from your frontend URL
+app.use(cors({
+origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+    return callback(null, true);
+    } else {
+    return callback(new Error('Not allowed by CORS'));
+    }
+}
+}));    
+// new end
+// app.use(cors({ origin: `http://${apihost}` })); // Allow requests from your frontend URL
 
 // parse application/json
 app.use(bodyParser.json());

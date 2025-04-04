@@ -23,7 +23,7 @@ COPY index.js ./
 RUN apk update && \
     apk add --no-cache postgresql-client curl
 # Expose port if you want
-# EXPOSE 3001
+EXPOSE 3001
 # Command to run the app
 CMD ["node", "index.js"]
 #http://backendapp:4001/user
